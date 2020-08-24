@@ -1,3 +1,18 @@
+<?php
+require_once'php/core/init.php';
+$user = new User();
+$override = new OverideData();
+$email = new Email();
+$random = new Random();
+
+$successMessage=null;$pageError=null;$errorMessage=null;
+$users = $override->getData('user');
+if($user->isLoggedIn()) {
+
+}else{
+    Redirect::to('index.php');
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -16,8 +31,7 @@
         <div class="breadLine">
 
             <ul class="breadcrumb">
-                <li><a href="#">Simple Admin</a> <span class="divider">></span></li>
-                <li class="active">Dashboard</li>
+                <li><a href="#">Dashboard</a> <span class="divider">></span></li>
             </ul>
 
             <ul class="buttons">
@@ -31,56 +45,18 @@
                             <span class="name">List users</span>
                         </div>
                         <div class="body-fluid users">
-
-                            <div class="item clearfix">
-                                <div class="image"><a href="#"><img src="img/users/aqvatarius_s.jpg" width="32"/></a></div>
-                                <div class="info">
-                                    <a href="#" class="name">Aqvatarius</a>
-                                    <span>online</span>
+                            <?php if($user->data()->accessLevel == 1){foreach ($override->getData('user') as $usr){?>
+                                <div class="item clearfix">
+                                    <div class="image"><a href="#"><img src="img/users/no-image.jpg" width="32"/></a></div>
+                                    <div class="info">
+                                        <a href="#" class="name"><?=$usr['firstname'].' '.$usr['lastname']?></a>
+                                        <span></span>
+                                    </div>
                                 </div>
-                            </div>
-
-                            <div class="item clearfix">
-                                <div class="image"><a href="#"><img src="img/users/olga_s.jpg" width="32"/></a></div>
-                                <div class="info">
-                                    <a href="#" class="name">Olga</a>
-                                    <span>online</span>
-                                </div>
-                            </div>
-
-                            <div class="item clearfix">
-                                <div class="image"><a href="#"><img src="img/users/alexey_s.jpg" width="32"/></a></div>
-                                <div class="info">
-                                    <a href="#" class="name">Alexey</a>
-                                    <span>online</span>
-                                </div>
-                            </div>
-
-                            <div class="item clearfix">
-                                <div class="image"><a href="#"><img src="img/users/dmitry_s.jpg" width="32"/></a></div>
-                                <div class="info">
-                                    <a href="#" class="name">Dmitry</a>
-                                    <span>online</span>
-                                </div>
-                            </div>
-
-                            <div class="item clearfix">
-                                <div class="image"><a href="#"><img src="img/users/helen_s.jpg" width="32"/></a></div>
-                                <div class="info">
-                                    <a href="#" class="name">Helen</a>
-                                </div>
-                            </div>
-
-                            <div class="item clearfix">
-                                <div class="image"><a href="#"><img src="img/users/alexander_s.jpg" width="32"/></a></div>
-                                <div class="info">
-                                    <a href="#" class="name">Alexander</a>
-                                </div>
-                            </div>
-
+                            <?php }}?>
                         </div>
                         <div class="footer">
-                            <button class="btn btn-default" type="button">Add new</button>
+                            <a href="add.php?id=1" class="btn btn-default" type="button">Add new</a>
                             <button class="btn btn-danger link_bcPopupList" type="button">Close</button>
                         </div>
                     </div>
@@ -116,14 +92,9 @@
 
                     <div class="wBlock red clearfix">
                         <div class="dSpace">
-                            <h3>Invoices statistics</h3>
+                            <h3>Total Stock</h3>
                             <span class="mChartBar" sparkType="bar" sparkBarColor="white"><!--130,190,260,230,290,400,340,360,390--></span>
-                            <span class="number">60%</span>
-                        </div>
-                        <div class="rSpace">
-                            <span>$1,530 <b>amount paid</b></span>
-                            <span>$2,102 <b>in queue</b></span>
-                            <span>$11,100 <b>total taxes</b></span>
+                            <span class="number"><?=$total?></span>
                         </div>
                     </div>
 
@@ -133,14 +104,9 @@
 
                     <div class="wBlock green clearfix">
                         <div class="dSpace">
-                            <h3>Users</h3>
+                            <h3>Assigned Stock</h3>
                             <span class="mChartBar" sparkType="bar" sparkBarColor="white"><!--5,10,15,20,23,21,25,20,15,10,25,20,10--></span>
-                            <span class="number">2,513</span>
-                        </div>
-                        <div class="rSpace">
-                            <span>351 <b>active</b></span>
-                            <span>2102 <b>passive</b></span>
-                            <span>100 <b>removed</b></span>
+                            <span class="number"><?=$assigned?></span>
                         </div>
                     </div>
 
@@ -150,15 +116,11 @@
 
                     <div class="wBlock blue clearfix">
                         <div class="dSpace">
-                            <h3>Last visits</h3>
+                            <h3>Sold</h3>
                             <span class="mChartBar" sparkType="bar" sparkBarColor="white"><!--240,234,150,290,310,240,210,400,320,198,250,222,111,240,221,340,250,190--></span>
-                            <span class="number">6,302</span>
+                            <span class="number">0</span>
                         </div>
-                        <div class="rSpace">
-                            <span>65% <b>New</b></span>
-                            <span>35% <b>Returning</b></span>
-                            <span>00:05:12 <b>Average time on site</b></span>
-                        </div>
+
                     </div>
 
                 </div>
@@ -378,7 +340,7 @@
                 <div class="col-md-4">
                     <div class="head clearfix">
                         <div class="isw-cloud"></div>
-                        <h1>Registrations</h1>
+                        <h1>Staff</h1>
                         <ul class="buttons">
                             <li>
                                 <a href="#" class="isw-users"></a>
@@ -397,111 +359,18 @@
                     <div class="block users scrollBox">
 
                         <div class="scroll" style="height: 270px;">
-
-                            <div class="item clearfix">
-                                <div class="image"><a href="#"><img src="img/users/aqvatarius_s.jpg" width="32"/></a></div>
-                                <div class="info">
-                                    <a href="#" class="name">Aqvatarius</a>
-                                    <div class="controls">
-                                        <a href="#" class="glyphicon glyphicon-ok"></a>
-                                        <a href="#" class="glyphicon glyphicon-remove"></a>
+                            <?php foreach ($users as $user){?>
+                                <div class="item clearfix">
+                                    <div class="image"><a href="#"><img src="img/users/no-image.jpg" width="32"/></a></div>
+                                    <div class="info">
+                                        <a href="#" class="name"><?=$user['firstname'].' '.$user['lastname']?></a>
+                                        <div class="controls">
+                                            <a href="#" class="glyphicon glyphicon-ok"></a>
+                                            <a href="#" class="glyphicon glyphicon-remove"></a>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-
-                            <div class="item clearfix">
-                                <div class="image"><a href="#"><img src="img/users/olga_s.jpg" width="32"/></a></div>
-                                <div class="info">
-                                    <a href="#" class="name">Olga</a>
-                                    <div class="controls">
-                                        <a href="#" class="glyphicon glyphicon-ok"></a>
-                                        <a href="#" class="glyphicon glyphicon-remove"></a>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="item clearfix">
-                                <div class="image"><a href="#"><img src="img/users/alexey_s.jpg" width="32"/></a></div>
-                                <div class="info">
-                                    <a href="#" class="name">Alexey</a>
-                                    <div class="controls">
-                                        <a href="#" class="glyphicon glyphicon-ok"></a>
-                                        <a href="#" class="glyphicon glyphicon-remove"></a>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="item clearfix">
-                                <div class="image"><a href="#"><img src="img/users/dmitry_s.jpg" width="32"/></a></div>
-                                <div class="info">
-                                    <a href="#" class="name">Dmitry</a>
-                                    <span>approved</span>
-                                </div>
-                            </div>
-
-                            <div class="item clearfix">
-                                <div class="image"><a href="#"><img src="img/users/helen_s.jpg" width="32"/></a></div>
-                                <div class="info">
-                                    <a href="#" class="name">Helen</a>
-                                    <span>approved</span>
-                                </div>
-                            </div>
-
-                            <div class="item clearfix">
-                                <div class="image"><a href="#"><img src="img/users/alexander_s.jpg" width="32"/></a></div>
-                                <div class="info">
-                                    <a href="#" class="name">Alexander</a>
-                                    <span>approved</span>
-                                </div>
-                            </div>
-
-                            <div class="item clearfix">
-                                <div class="image"><a href="#"><img src="img/users/aqvatarius_s.jpg" width="32"/></a></div>
-                                <div class="info">
-                                    <a href="#" class="name">Aqvatarius</a>
-                                    <span>approved</span>
-                                </div>
-                            </div>
-
-                            <div class="item clearfix">
-                                <div class="image"><a href="#"><img src="img/users/olga_s.jpg" width="32"/></a></div>
-                                <div class="info">
-                                    <a href="#" class="name">Olga</a>
-                                    <span>approved</span>
-                                </div>
-                            </div>
-
-                            <div class="item clearfix">
-                                <div class="image"><a href="#"><img src="img/users/alexey_s.jpg" width="32"/></a></div>
-                                <div class="info">
-                                    <a href="#" class="name">Alexey</a>
-                                    <span>approved</span>
-                                </div>
-                            </div>
-
-                            <div class="item clearfix">
-                                <div class="image"><a href="#"><img src="img/users/dmitry_s.jpg" width="32"/></a></div>
-                                <div class="info">
-                                    <a href="#" class="name">Dmitry</a>
-                                    <span>approved</span>
-                                </div>
-                            </div>
-
-                            <div class="item clearfix">
-                                <div class="image"><a href="#"><img src="img/users/helen_s.jpg" width="32"/></a></div>
-                                <div class="info">
-                                    <a href="#" class="name">Helen</a>
-                                    <span>approved</span>
-                                </div>
-                            </div>
-
-                            <div class="item clearfix">
-                                <div class="image"><a href="#"><img src="img/users/alexander_s.jpg" width="32"/></a></div>
-                                <div class="info">
-                                    <a href="#" class="name">Alexander</a>
-                                    <span>approved</span>
-                                </div>
-                            </div>
+                            <?php }?>
 
                         </div>
 
@@ -539,47 +408,22 @@
                             <tr>
                                 <th><input type="checkbox" name="checkall"/></th>
                                 <th width="25%">Name</th>
-                                <th width="25%">E-mail</th>
-                                <th width="25%">Phone</th>
-                                <th width="25%">Status</th>
+                                <th width="25%">Sold</th>
+                                <th width="25%">Remained</th>
+                                <th width="25%">Total</th>
                             </tr>
                             </thead>
                             <tbody>
-                            <tr>
-                                <td><input type="checkbox" name="checkbox"/></td>
-                                <td>Dmitry</td>
-                                <td>dmitry@domain.com</td>
-                                <td>+98(765) 432-10-98</td>
-                                <td><span class="label label-success">aviable</span></td>
-                            </tr>
-                            <tr>
-                                <td><input type="checkbox" name="checkbox"/></td>
-                                <td>Alex</td>
-                                <td>alex@domain.com</td>
-                                <td>+98(765) 432-10-99</td>
-                                <td><span class="label label-success">aviable</span></td>
-                            </tr>
-                            <tr>
-                                <td><input type="checkbox" name="checkbox"/></td>
-                                <td>John</td>
-                                <td>john@domain.com</td>
-                                <td>+98(765) 432-10-97</td>
-                                <td><span class="label label-warning">away</span></td>
-                            </tr>
-                            <tr>
-                                <td><input type="checkbox" name="checkbox"/></td>
-                                <td>Angelina</td>
-                                <td>angelina@domain.com</td>
-                                <td>+98(765) 432-10-90</td>
-                                <td><span class="label label-warning">away</span></td>
-                            </tr>
-                            <tr>
-                                <td><input type="checkbox" name="checkbox"/></td>
-                                <td>Tom</td>
-                                <td>tom@domain.com</td>
-                                <td>+98(765) 432-10-92</td>
-                                <td><span class="label label-default">offline</span></td>
-                            </tr>
+                            <?php foreach ($override->getData('assigned_stock') as $aStock){
+                                $staff=$override->get('user','id',$aStock['user_id'])?>
+                                <tr>
+                                    <td><input type="checkbox" name="checkbox"/></td>
+                                    <td><?=$staff[0]['firstname'].' '.$staff[0]['lastname']?></td>
+                                    <td>0</td>
+                                    <td><?=$aStock['quantity']?></td>
+                                    <td><?=$aStock['quantity']?></td>
+                                </tr>
+                            <?php }?>
                             </tbody>
                         </table>
                     </div>
