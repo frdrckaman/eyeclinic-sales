@@ -36,8 +36,18 @@ foreach ($override->getData('assigned_stock') as $stock){
             </a>
         </li>
         <li class="active">
+            <a href="add.php?id=6">
+                <span class="isw-attachment"></span><span class="text">Add Batch</span>
+            </a>
+        </li>
+        <li class="active">
+            <a href="add.php?id=5">
+                <span class="isw-archive"></span><span class="text">Add Stock Batch</span>
+            </a>
+        </li>
+        <li class="active">
             <a href="add.php?id=3">
-                <span class="isw-list"></span><span class="text">Add Stock</span>
+                <span class="isw-list"></span><span class="text">Add Frame</span>
             </a>
         </li>
         <li>
@@ -46,7 +56,7 @@ foreach ($override->getData('assigned_stock') as $stock){
             </a>
         </li>
         <li>
-            <a href="#">
+            <a href="info.php?id=1">
                 <span class="isw-settings"></span><span class="text">Stock Management</span>
             </a>
         </li>

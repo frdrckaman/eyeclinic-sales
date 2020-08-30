@@ -135,6 +135,9 @@ if($user->isLoggedIn()) {
                 'brand_id' => array(
                     'required' => true,
                 ),
+                'batch_id' => array(
+                    'required' => true,
+                ),
                 'user_id' => array(
                     'required' => true,
                 ),
@@ -144,7 +147,7 @@ if($user->isLoggedIn()) {
             ));
             if ($validate->passed()) {
                 try {
-                    $stocks = $override->getNews('assigned_stock','brand_id',Input::get('brand_id'), 'user_id', Input::get('user_id'));
+                    $stocks = $override->selectData('assigned_stock','brand_id',Input::get('brand_id'), 'user_id','batch_id',Input::get('batch_id'), Input::get('user_id'));
                     if($stocks){
                         $qnt= $stocks[0]['quantity'] + Input::get('quantity');
                         $user->updateRecord('assigned_stock',array('quantity'=>$qnt),$stocks[0]['id']);
@@ -152,6 +155,7 @@ if($user->isLoggedIn()) {
                     }else{
                         $user->createRecord('assigned_stock', array(
                             'user_id' => Input::get('user_id'),
+                            'batch_id' => Input::get('batch_id'),
                             'brand_id' => Input::get('brand_id'),
                             'quantity' => Input::get('quantity'),
                             'status' => 1,
@@ -162,6 +166,120 @@ if($user->isLoggedIn()) {
                     $pStock = $override->get('frame_stock','brand_id', Input::get('brand_id'));
                     $n_st = $pStock[0]['quantity'] - Input::get('quantity');
                     $user->updateRecord('frame_stock',array('quantity'=>$n_st),$pStock[0]['id']);
+                } catch (Exception $e) {
+                    die($e->getMessage());
+                }
+            } else {
+                $pageError = $validate->errors();
+            }
+        }
+        elseif (Input::get('add_batch')){
+            $validate = $validate->check($_POST, array(
+                'batch' => array(
+                    'required' => true,
+                ),
+                'batch_id' => array(
+                    'required' => true,
+                ),
+                'quantity' => array(
+                    'required' => true,
+                ),
+                'price' => array(
+                    'required' => true,
+                ),
+            ));
+            if ($validate->passed()) {
+                try {
+                    $user->createRecord('batch', array(
+                        'name' => Input::get('batch'),
+                        'batch_id' => Input::get('batch_id'),
+                        'quantity' => Input::get('quantity'),
+                        'cost' => Input::get('price'),
+                        'create_date' => date('Y-m-d'),
+                        'status' => 1,
+                        'user_id'=>$user->data()->id
+                    ));
+                    $successMessage = 'Batch Successful Added';
+
+                } catch (Exception $e) {
+                    die($e->getMessage());
+                }
+            } else {
+                $pageError = $validate->errors();
+            }
+        }
+        elseif (Input::get('add_batch_stock')){
+            $validate = $validate->check($_POST, array(
+                'brand_id' => array(
+                    'required' => true,
+                ),
+                'batch_id' => array(
+                    'required' => true,
+                ),
+                'quantity' => array(
+                    'required' => true,
+                ),
+                'price' => array(
+                    'required' => true,
+                ),
+            ));
+            if ($validate->passed()) {
+                try {
+                    $user->createRecord('stock_batch', array(
+                        'batch_id' => Input::get('batch_id'),
+                        'brand_id' => Input::get('brand_id'),
+                        'quantity' => Input::get('quantity'),
+                        'cost' => Input::get('price'),
+                        'create_on' => date('Y-m-d'),
+                        'status' => 1,
+                        'user_id'=>$user->data()->id
+                    ));
+                    $successMessage = 'Stock Batch Successful Added';
+
+                } catch (Exception $e) {
+                    die($e->getMessage());
+                }
+            } else {
+                $pageError = $validate->errors();
+            }
+        }
+        elseif (Input::get('frame_sale')){
+            $validate = $validate->check($_POST, array(
+                'batch_id' => array(
+                    'required' => true,
+                ),
+                'brand_id' => array(
+                    'required' => true,
+                ),
+                'client_name' => array(
+                    'required' => true,
+                ),
+                'client_phone' => array(
+                    'required' => true,
+                ),
+                'quantity' => array(
+                    'required' => true,
+                ),
+                'pay_type' => array(
+                    'required' => true,
+                ),
+            ));
+            if ($validate->passed()) {
+                try {
+                    $user->createRecord('frame_sale', array(
+                        'client_name' => Input::get('client_name'),
+                        'client_phone' => Input::get('client_phone'),
+                        'batch_id' => Input::get('batch_id'),
+                        'brand_id' => Input::get('brand_id'),
+                        'quantity' => Input::get('quantity'),
+                        'pay_type' => Input::get('pay_type'),
+                        'sale_date' => date('Y-m-d'),
+                        'invoice' => '',
+                        'status' => 1,
+                        'user_id'=>$user->data()->id
+                    ));
+                    $successMessage = 'Frame Successful Sold';
+
                 } catch (Exception $e) {
                     die($e->getMessage());
                 }
@@ -195,7 +313,6 @@ if($user->isLoggedIn()) {
                 <li><a href="#">Simple Admin</a> <span class="divider">></span></li>
                 <li class="active">Dashboard</li>
             </ul>
-
             <ul class="buttons">
                 <li>
                     <a href="#" class="link_bcPopupList"><span class="glyphicon glyphicon-user"></span><span class="text">Users list</span></a>
@@ -281,7 +398,6 @@ if($user->isLoggedIn()) {
                     </div>
                 </li>
             </ul>
-
         </div>
 
         <div class="workplace">
@@ -402,7 +518,7 @@ if($user->isLoggedIn()) {
                     <div class="col-md-offset-1 col-md-8">
                         <div class="head clearfix">
                             <div class="isw-ok"></div>
-                            <h1>Add Stock</h1>
+                            <h1>Add Frame</h1>
                         </div>
                         <div class="block-fluid">
                             <form id="validation" method="post" >
@@ -458,6 +574,17 @@ if($user->isLoggedIn()) {
                                     </div>
                                 </div>
                                 <div class="row-form clearfix">
+                                    <div class="col-md-3">Select Batch</div>
+                                    <div class="col-md-9">
+                                        <select name="batch_id" id="s2_3" style="width: 100%;" required>
+                                            <option value="">Select</option>
+                                            <?php foreach ($override->get('batch','status',1) as $batch){?>
+                                                <option value="<?=$batch['id']?>"><?=$batch['name']?></option>
+                                            <?php }?>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row-form clearfix">
                                     <div class="col-md-3">Select Brand</div>
                                     <div class="col-md-9">
                                         <select name="brand_id" id="s2_2" style="width: 100%;" required>
@@ -477,6 +604,166 @@ if($user->isLoggedIn()) {
 
                                 <div class="footer tar">
                                     <input type="submit" name="assign_stock" value="Submit" class="btn btn-default">
+                                </div>
+
+                            </form>
+                        </div>
+
+                    </div>
+                <?php }elseif ($_GET['id'] == 5){?>
+                    <div class="col-md-offset-1 col-md-8">
+                        <div class="head clearfix">
+                            <div class="isw-ok"></div>
+                            <h1>Add Stock</h1>
+                        </div>
+                        <div class="block-fluid">
+                            <form id="validation" method="post" >
+
+                                <div class="row-form clearfix">
+                                    <div class="col-md-3">Select Batch</div>
+                                    <div class="col-md-9">
+                                        <select name="batch_id" id="s2_1" style="width: 100%;" required>
+                                            <option value="">Select</option>
+                                            <?php foreach ($override->get('batch','status',1) as $batch){?>
+                                                <option value="<?=$batch['id']?>"><?=$batch['name']?></option>
+                                            <?php }?>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row-form clearfix">
+                                    <div class="col-md-3">Select Brand</div>
+                                    <div class="col-md-9">
+                                        <select name="brand_id" id="s2_2" style="width: 100%;" required>
+                                            <option value="">Select</option>
+                                            <?php foreach ($override->getData('frame_brand') as $brand){?>
+                                                <option value="<?=$brand['id']?>"><?=$brand['name']?></option>
+                                            <?php }?>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row-form clearfix">
+                                    <div class="col-md-3">Quantity:</div>
+                                    <div class="col-md-9">
+                                        <input value="" class="validate[required]" type="text" name="quantity" id="quantity"/>
+                                    </div>
+                                </div>
+                                <div class="row-form clearfix">
+                                    <div class="col-md-3">Price per Frame:</div>
+                                    <div class="col-md-9">
+                                        <input value="" class="validate[required]" type="text" name="price" id="price"/>
+                                    </div>
+                                </div>
+
+                                <div class="footer tar">
+                                    <input type="submit" name="add_batch_stock" value="Submit" class="btn btn-default">
+                                </div>
+
+                            </form>
+                        </div>
+
+                    </div>
+                <?php }elseif ($_GET['id'] == 6){?>
+                    <div class="col-md-offset-1 col-md-8">
+                        <div class="head clearfix">
+                            <div class="isw-ok"></div>
+                            <h1>Add Stock Batch</h1>
+                        </div>
+                        <div class="block-fluid">
+                            <form id="validation" method="post" >
+                                <div class="row-form clearfix">
+                                    <div class="col-md-3">Batch Name:</div>
+                                    <div class="col-md-9">
+                                        <input value="" class="validate[required]" type="text" name="batch" id="batch"/>
+                                    </div>
+                                </div>
+                                <div class="row-form clearfix">
+                                    <div class="col-md-3">Batch ID:</div>
+                                    <div class="col-md-9">
+                                        <input value="" class="validate[required]" type="text" name="batch_id" id="batch_id"/>
+                                    </div>
+                                </div>
+                                <div class="row-form clearfix">
+                                    <div class="col-md-3">Quantity:</div>
+                                    <div class="col-md-9">
+                                        <input value="" class="validate[required]" type="text" name="quantity" id="quantity"/>
+                                    </div>
+                                </div>
+                                <div class="row-form clearfix">
+                                    <div class="col-md-3">Price per Frame:</div>
+                                    <div class="col-md-9">
+                                        <input value="" class="validate[required]" type="text" name="price" id="price"/>
+                                    </div>
+                                </div>
+
+                                <div class="footer tar">
+                                    <input type="submit" name="add_batch" value="Submit" class="btn btn-default">
+                                </div>
+
+                            </form>
+                        </div>
+
+                    </div>
+                <?php }elseif ($_GET['id'] == 7){?>
+                    <div class="col-md-offset-1 col-md-8">
+                        <div class="head clearfix">
+                            <div class="isw-ok"></div>
+                            <h1>Sales Frame</h1>
+                        </div>
+                        <div class="block-fluid">
+                            <form id="validation" method="post" >
+                                <div class="row-form clearfix">
+                                    <div class="col-md-3">Select Batch</div>
+                                    <div class="col-md-9">
+                                        <select name="batch_id" id="s2_1" style="width: 100%;" required>
+                                            <option value="">Select</option>
+                                            <?php foreach ($override->get('batch','status',1) as $batch){?>
+                                                <option value="<?=$batch['id']?>"><?=$batch['name']?></option>
+                                            <?php }?>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row-form clearfix">
+                                    <div class="col-md-3">Select Brand</div>
+                                    <div class="col-md-9">
+                                        <select name="brand_id" id="s2_2" style="width: 100%;" required>
+                                            <option value="">Select</option>
+                                            <?php foreach ($override->getData('frame_brand') as $brand){?>
+                                                <option value="<?=$brand['id']?>"><?=$brand['name']?></option>
+                                            <?php }?>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row-form clearfix">
+                                    <div class="col-md-3">Client Name:</div>
+                                    <div class="col-md-9">
+                                        <input value="" class="validate[required]" type="text" name="client_name" id="client_name"/>
+                                    </div>
+                                </div>
+                                <div class="row-form clearfix">
+                                    <div class="col-md-3">Client Phone:</div>
+                                    <div class="col-md-9">
+                                        <input value="" class="validate[required]" type="text" name="client_phone" id="client_phone"/>
+                                    </div>
+                                </div>
+                                <div class="row-form clearfix">
+                                    <div class="col-md-3">Payment Type</div>
+                                    <div class="col-md-9">
+                                        <select name="pay_type" id="s2_2" style="width: 100%;" required>
+                                            <option value="">Select Method</option>
+                                            <option value="1">Cash</option>
+                                            <option value="2">Credit</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row-form clearfix">
+                                    <div class="col-md-3">Quantity:</div>
+                                    <div class="col-md-9">
+                                        <input value="" class="validate[required]" type="text" name="quantity" id="quantity"/>
+                                    </div>
+                                </div>
+
+                                <div class="footer tar">
+                                    <input type="submit" name="frame_sale" value="Submit" class="btn btn-default">
                                 </div>
 
                             </form>
