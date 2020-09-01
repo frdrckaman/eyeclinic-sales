@@ -160,22 +160,22 @@ if($user->isLoggedIn()) {
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <?php $batches = $override->getNoRepeat('assigned_stock','batch_id', 'user_id',$_GET['uid']);
+                                <?php $sld=0;$batches = $override->getNoRepeat('assigned_stock','batch_id', 'user_id',$_GET['uid']);
                                 foreach ($batches as $batch){
-                                foreach ($override->get('assigned_stock','batch_id',$batch['batch_id']) as $aStock){
-                                    $staff=$override->get('user','id',$aStock['user_id']);
+                                    $sold = $override->getSumV('frame_sale','quantity','batch_id',$batch['batch_id']);
+                                    $staff=$override->get('user','id',$_GET['uid']);
                                     $batch_name = $override->get('batch','id',$batch['batch_id'])[0]['name'];
-                                    $sld=0;
-                                    $sold = $override->getSumV('frame_sale','quantity','batch_id',$batch['batch_id'])?>
+                                    $aStock=$override->get('assigned_stock','batch_id',$batch['batch_id']);
+                                    ?>
                                     <tr>
                                         <td><input type="checkbox" name="checkbox"/></td>
                                         <td><a href="#"> <?=$batch_name?></a></td>
                                         <td><?php if($sold[0]['SUM(quantity)']){$sld=$sold[0]['SUM(quantity)'];echo $sold[0]['SUM(quantity)'];}else{echo 0;}?></td>
-                                        <td><?=($aStock['quantity']-$sld)?></td>
-                                        <td><?=$aStock['quantity']?></td>
+                                        <td><?=($aStock[0]['quantity']-$sld)?></td>
+                                        <td><?=$aStock[0]['quantity']?></td>
                                         <td><a href="info.php?id=3&uid=<?=$staff[0]['id']?>&bid=<?=$batch['batch_id']?>">Details</a> </td>
                                     </tr>
-                                <?php }}?>
+                                <?php }?>
                                 </tbody>
                             </table>
                         </div>
@@ -203,12 +203,17 @@ if($user->isLoggedIn()) {
                                 <thead>
                                 <tr>
                                     <th><input type="checkbox" name="checkall"/></th>
-                                    <th width="20%">Brand</th>
-                                    <th width="20%">Batch</th>
-                                    <th width="10%">Credit</th>
-                                    <th width="10%">Cash</th>
-                                    <th width="20%">Total Sold</th>
-                                    <th width="20%">Total Stock</th>
+                                    <th width="15%">Brand</th>
+                                    <th width="15%">Batch</th>
+                                    <th width="10%">No. Sold by Credit</th>
+                                    <th width="5%">No. Sold in Cash</th>
+                                    <th width="5%">No. Total Sold</th>
+                                    <th width="5%">Stock Remained</th>
+                                    <th width="5%">Total Stock Given</th>
+                                    <th width="10%">Cash Sales</th>
+                                    <th width="10%">Credit Sales</th>
+                                    <th width="10%">Total Sales Amount</th>
+                                    <th width="10%">Total Expect Amount</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -216,13 +221,16 @@ if($user->isLoggedIn()) {
                                     $brand=$override->get('frame_brand','id',$aStock['brand_id']);
                                     $batch=$override->get('batch','id',$aStock['batch_id']);
                                     $sold = $override->getSumV('frame_sale','quantity','batch_id',$aStock['batch_id']);
-                                    $payCr=0;$payC=0;
+                                    $payCr=0;$payC=0;$price=0;$cCost=0;$crCost=0;$tSales=0;$tExpCost=0;$payC=0;
                                     $sld = $override->getNews('frame_sale','batch_id',$_GET['bid'],'brand_id',$brand[0]['id']);
-                                    if($sld[0]['pay_type'] == 1){
-                                        $payC=$override->getSumV3('frame_sale','quantity','batch_id',$aStock['batch_id'],'brand_id',$brand[0]['id'],'pay_type',1)[0]['SUM(quantity)'];
-                                    }elseif ($sld[0]['pay_type'] == 2){
-                                        $payCr = $override->getSumV3('frame_sale','quantity','batch_id',$aStock['batch_id'],'brand_id',$brand[0]['id'],'pay_type',2)[0]['SUM(quantity)'];
-                                    }?>
+                                    $payC=$override->getSumV3('frame_sale','quantity','batch_id',$aStock['batch_id'],'brand_id',$brand[0]['id'],'pay_type',1)[0]['SUM(quantity)'];
+                                    $payCr=$override->getSumV3('frame_sale','quantity','batch_id',$aStock['batch_id'],'brand_id',$brand[0]['id'],'pay_type',2)[0]['SUM(quantity)'];
+                                    $price=$override->getNews('stock_batch','batch_id',$_GET['bid'],'brand_id',$brand[0]['id']);
+                                    $cCost=$payC*$price[0]['cost'];
+                                    $crCost=$payCr*$price[0]['cost'];
+                                    $tSales=$crCost+$cCost;
+                                    $tExpCost=$aStock['quantity']*$price[0]['cost'];
+                                    ?>
                                         <tr>
                                             <td><input type="checkbox" name="checkbox"/></td>
                                             <td><a href="#"> <?=$brand[0]['name']?></a></td>
@@ -230,7 +238,12 @@ if($user->isLoggedIn()) {
                                             <td><?=$payCr?></td>
                                             <td><?=$payC?></td>
                                             <td><?=$sold[0]['SUM(quantity)']?></td>
+                                            <td><?=$aStock['quantity']-$sold[0]['SUM(quantity)']?></td>
                                             <td><?=$aStock['quantity']?></td>
+                                            <td><?=number_format($cCost)?></td>
+                                            <td><?=number_format($crCost)?></td>
+                                            <td><?=number_format($tSales)?></td>
+                                            <td><?=number_format($tExpCost)?></td>
                                         </tr>
                                     <?php }?>
                                 </tbody>

@@ -145,29 +145,45 @@ if($user->isLoggedIn()) {
                     'required' => true,
                 ),
             ));
-            if ($validate->passed()) {
-                try {
-                    $stocks = $override->selectData('assigned_stock','brand_id',Input::get('brand_id'), 'user_id','batch_id',Input::get('batch_id'), Input::get('user_id'));
-                    if($stocks){
-                        $qnt= $stocks[0]['quantity'] + Input::get('quantity');
-                        $user->updateRecord('assigned_stock',array('quantity'=>$qnt),$stocks[0]['id']);
-                        $successMessage = 'Stock Assigned Successful';
-                    }else{
-                        $user->createRecord('assigned_stock', array(
+            if ($validate->passed()) {$nw_st=0;
+                $batch=$override->selectData('stock_batch','batch_id',Input::get('batch_id'),'brand_id',Input::get('brand_id'),'status',1);
+                $stocks_batch=$override->getSumV3('assigned_stock','quantity','batch_id',Input::get('batch_id'),'brand_id',Input::get('brand_id'),'status',1);
+                $nw_st = Input::get('quantity') + $stocks_batch[0]['SUM(quantity)'];
+                if($nw_st <= $batch[0]['quantity']){
+                    try {
+                        $stocks = $override->selectData('assigned_stock','brand_id', Input::get('brand_id'),'batch_id',Input::get('batch_id'),'user_id', Input::get('user_id'));
+                        if($stocks){
+                            $qnt= $stocks[0]['quantity'] + Input::get('quantity');
+                            $user->updateRecord('assigned_stock',array('quantity'=>$qnt),$stocks[0]['id']);
+                            $successMessage = 'Stock Assigned Successful';
+                        }else{
+                            $user->createRecord('assigned_stock', array(
+                                'user_id' => Input::get('user_id'),
+                                'batch_id' => Input::get('batch_id'),
+                                'brand_id' => Input::get('brand_id'),
+                                'quantity' => Input::get('quantity'),
+                                'status' => 1,
+                                'admin_id'=>$user->data()->id
+                            ));
+                            $successMessage = 'Stock Assigned Successful';
+                        }
+                        $user->createRecord('assigned_stock_rec', array(
                             'user_id' => Input::get('user_id'),
                             'batch_id' => Input::get('batch_id'),
                             'brand_id' => Input::get('brand_id'),
                             'quantity' => Input::get('quantity'),
+                            'create_on' => date('Y-m-d'),
                             'status' => 1,
                             'admin_id'=>$user->data()->id
                         ));
-                        $successMessage = 'Stock Assigned Successful';
+//                        $pStock = $override->get('frame_stock','brand_id', Input::get('brand_id'));
+//                        $n_st = $pStock[0]['quantity'] - Input::get('quantity');
+//                        $user->updateRecord('frame_stock',array('quantity'=>$n_st),$pStock[0]['id']);
+                    } catch (Exception $e) {
+                        die($e->getMessage());
                     }
-                    $pStock = $override->get('frame_stock','brand_id', Input::get('brand_id'));
-                    $n_st = $pStock[0]['quantity'] - Input::get('quantity');
-                    $user->updateRecord('frame_stock',array('quantity'=>$n_st),$pStock[0]['id']);
-                } catch (Exception $e) {
-                    die($e->getMessage());
+                }else{
+                    $errorMessage='Insufficient Amount, it must be less or equal to stock batch amount';
                 }
             } else {
                 $pageError = $validate->errors();
@@ -223,21 +239,37 @@ if($user->isLoggedIn()) {
                     'required' => true,
                 ),
             ));
-            if ($validate->passed()) {
-                try {
-                    $user->createRecord('stock_batch', array(
-                        'batch_id' => Input::get('batch_id'),
-                        'brand_id' => Input::get('brand_id'),
-                        'quantity' => Input::get('quantity'),
-                        'cost' => Input::get('price'),
-                        'create_on' => date('Y-m-d'),
-                        'status' => 1,
-                        'user_id'=>$user->data()->id
-                    ));
-                    $successMessage = 'Stock Batch Successful Added';
+            if ($validate->passed()) {$nw_st=0;
+                $batch=$override->getNews('batch','id',Input::get('batch_id'),'status',1);
+                $stocks_batch=$override->getSumV('stock_batch','quantity','batch_id',Input::get('batch_id'));
+                $nw_st = Input::get('quantity') + $stocks_batch[0]['SUM(quantity)'];
+                if($nw_st <= $batch[0]['quantity']){
+                    try {
+                        $user->createRecord('stock_batch', array(
+                            'batch_id' => Input::get('batch_id'),
+                            'brand_id' => Input::get('brand_id'),
+                            'quantity' => Input::get('quantity'),
+                            'cost' => Input::get('price'),
+                            'create_on' => date('Y-m-d'),
+                            'status' => 1,
+                            'user_id'=>$user->data()->id
+                        ));
+                        $user->createRecord('stock_batch_rec', array(
+                            'batch_id' => Input::get('batch_id'),
+                            'brand_id' => Input::get('brand_id'),
+                            'quantity' => Input::get('quantity'),
+                            'cost' => Input::get('price'),
+                            'create_on' => date('Y-m-d'),
+                            'status' => 1,
+                            'user_id'=>$user->data()->id
+                        ));
+                        $successMessage = 'Stock Batch Successful Added';
 
-                } catch (Exception $e) {
-                    die($e->getMessage());
+                    } catch (Exception $e) {
+                        die($e->getMessage());
+                    }
+                }else{
+                    $errorMessage='Insufficient Amount, it must be less or equal to stock batch amount111';
                 }
             } else {
                 $pageError = $validate->errors();
@@ -264,24 +296,31 @@ if($user->isLoggedIn()) {
                     'required' => true,
                 ),
             ));
-            if ($validate->passed()) {
-                try {
-                    $user->createRecord('frame_sale', array(
-                        'client_name' => Input::get('client_name'),
-                        'client_phone' => Input::get('client_phone'),
-                        'batch_id' => Input::get('batch_id'),
-                        'brand_id' => Input::get('brand_id'),
-                        'quantity' => Input::get('quantity'),
-                        'pay_type' => Input::get('pay_type'),
-                        'sale_date' => date('Y-m-d'),
-                        'invoice' => '',
-                        'status' => 1,
-                        'user_id'=>$user->data()->id
-                    ));
-                    $successMessage = 'Frame Successful Sold';
+            if ($validate->passed()) {$avl=0;$sld=0;
+                $assigned_stock=$override->selectData('assigned_stock','batch_id',Input::get('batch_id'),'brand_id',Input::get('brand_id'),'user_id',$user->data()->id);
+                $stocks_sold=$override->getSumV3('frame_sale','quantity','batch_id',Input::get('batch_id'),'brand_id',Input::get('brand_id'),'user_id',$user->data()->id);
+                $avl=$assigned_stock[0]['quantity'] - $stocks_sold[0]['SUM(quantity)'];
+                if(Input::get('quantity') <= $avl){
+                    try {
+                        $user->createRecord('frame_sale', array(
+                            'client_name' => Input::get('client_name'),
+                            'client_phone' => Input::get('client_phone'),
+                            'batch_id' => Input::get('batch_id'),
+                            'brand_id' => Input::get('brand_id'),
+                            'quantity' => Input::get('quantity'),
+                            'pay_type' => Input::get('pay_type'),
+                            'sale_date' => date('Y-m-d'),
+                            'invoice' => '',
+                            'status' => 1,
+                            'user_id'=>$user->data()->id
+                        ));
+                        $successMessage = 'Frame Successful Sold';
 
-                } catch (Exception $e) {
-                    die($e->getMessage());
+                    } catch (Exception $e) {
+                        die($e->getMessage());
+                    }
+                }else{
+                    $errorMessage='Insufficient Amount, it must be less or equal to stock batch amount';
                 }
             } else {
                 $pageError = $validate->errors();
