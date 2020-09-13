@@ -8,6 +8,13 @@ class OverideData{
             $e->getMessage();
         }
     }
+    public function unique($table,$field,$value){
+        if($this->get($table,$field,$value)){
+            return true;
+        }else{
+            return false;
+        }
+    }
     public function update($password,$salt,$pswd,$staff){
         $query = $this->_pdo->query("UPDATE staff SET password = '$password',salt='$salt',pswd='$pswd',token='' WHERE id=$staff");
         $query->execute();

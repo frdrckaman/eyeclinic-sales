@@ -83,10 +83,30 @@ foreach ($override->getData('assigned_stock') as $stock){
             </a>
         </li>
 
-        <li>
-            <a href="#">
-                <span class="isw-zoom"></span><span class="text">Reports</span>
-            </a>
+        <li class="openable">
+            <a href="#"><span class="isw-zoom"></span><span class="text">Reports</span></a>
+            <ul>
+                <li>
+                    <a href="#">
+                        <span class="glyphicon glyphicon-user"></span><span class="text">Staff Report</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <span class="glyphicon glyphicon-share"></span><span class="text">Sales Report</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <span class="glyphicon glyphicon-download"></span><span class="text">Purchase Report</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <span class="glyphicon glyphicon-download-alt"></span><span class="text">Stock Report</span>
+                    </a>
+                </li>
+            </ul>
         </li>
         <li>
             <a href="add.php?id=7">

@@ -250,6 +250,180 @@ if($user->isLoggedIn()) {
                             </table>
                         </div>
                     </div>
+                <?php }elseif($_GET['id'] == 4){?>
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="head clearfix">
+                                    <div class="isw-archive"></div>
+                                    <h1>Sales Records</h1>
+                                    <ul class="buttons">
+                                        <li>
+                                            <a href="#" class="isw-settings"></a>
+                                            <ul class="dd-list">
+                                                <li><a href="#"><span class="isw-list"></span> Show all</a></li>
+                                                <li><a href="#"><span class="isw-ok"></span> Approved</a></li>
+                                                <li><a href="#"><span class="isw-minus"></span> Unapproved</a></li>
+                                                <li><a href="#"><span class="isw-refresh"></span> Refresh</a></li>
+                                            </ul>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="block-fluid accordion">
+
+                                    <h3>November 2012</h3>
+                                    <div>
+                                        <table cellpadding="0" cellspacing="0" width="100%" class="sOrders">
+                                            <thead>
+                                            <tr>
+                                                <th width="60">Date</th><th>User</th><th width="60">Price</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <tr>
+                                                <td><span class="date">Nov 6</span><span class="time">12:35</span></td>
+                                                <td><a href="#">Aqvatarius</a></td>
+                                                <td><span class="price">$1366.12</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td><span class="date">Nov 8</span><span class="time">18:42</span></td>
+                                                <td><a href="#">Olga</a></td>
+                                                <td><span class="price">$146.00</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td><span class="date">Nov 15</span><span class="time">8:21</span></td>
+                                                <td><a href="#">Alex</a></td>
+                                                <td><span class="price">$879.24</span></td>
+                                            </tr>
+                                            </tbody>
+                                            <tfoot>
+                                            <tr>
+                                                <td colspan="3" align="right"><button class="btn btn-default btn-sm">More...</button></td>
+                                            </tr>
+                                            </tfoot>
+                                        </table>
+                                    </div>
+
+                                    <h3>October 2012</h3>
+                                    <div>
+                                        <table cellpadding="0" cellspacing="0" width="100%" class="sOrders">
+                                            <thead>
+                                            <tr>
+                                                <th width="60">Date</th><th>User</th><th width="60">Price</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <tr>
+                                                <td><span class="date">Oct 6</span><span class="time">12:35</span></td>
+                                                <td><a href="#">Aqvatarius</a></td>
+                                                <td><span class="price">$1366.12</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td><span class="date">Oct 8</span><span class="time">18:42</span></td>
+                                                <td><a href="#">Olga</a></td>
+                                                <td><span class="price">$146.00</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td><span class="date">Oct 15</span><span class="time">8:21</span></td>
+                                                <td><a href="#">Alex</a></td>
+                                                <td><span class="price">$879.24</span></td>
+                                            </tr>
+                                            </tbody>
+                                            <tfoot>
+                                            <tr>
+                                                <td colspan="3" align="right"><button class="btn btn-default btn-sm">More...</button></td>
+                                            </tr>
+                                            </tfoot>
+                                        </table>
+                                    </div>
+
+                                    <h3>September 2012</h3>
+                                    <div>
+                                        <table cellpadding="0" cellspacing="0" width="100%" class="sOrders">
+                                            <thead>
+                                            <tr>
+                                                <th width="60">Date</th><th>User</th><th width="60">Price</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <tr>
+                                                <td><span class="date">Sep 6</span><span class="time">12:35</span></td>
+                                                <td><a href="#">Aqvatarius</a></td>
+                                                <td><span class="price">$1366.12</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td><span class="date">Sep 8</span><span class="time">18:42</span></td>
+                                                <td><a href="#">Olga</a></td>
+                                                <td><span class="price">$146.00</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td><span class="date">Sep 15</span><span class="time">8:21</span></td>
+                                                <td><a href="#">Alex</a></td>
+                                                <td><span class="price">$879.24</span></td>
+                                            </tr>
+                                            </tbody>
+                                            <tfoot>
+                                            <tr>
+                                                <td colspan="3" align="right"><button class="btn btn-default btn-sm">More...</button></td>
+                                            </tr>
+                                            </tfoot>
+                                        </table>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <?php }elseif ($_GET['id'] == 5){?>
+                    <div class="col-md-12">
+                        <div class="head clearfix">
+                            <div class="isw-grid"></div>
+                            <h1>Simple table</h1>
+                            <ul class="buttons">
+                                <li><a href="#" class="isw-download"></a></li>
+                                <li><a href="#" class="isw-attachment"></a></li>
+                                <li>
+                                    <a href="#" class="isw-settings"></a>
+                                    <ul class="dd-list">
+                                        <li><a href="#"><span class="isw-plus"></span> New document</a></li>
+                                        <li><a href="#"><span class="isw-edit"></span> Edit</a></li>
+                                        <li><a href="#"><span class="isw-delete"></span> Delete</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="block-fluid">
+                            <table cellpadding="0" cellspacing="0" width="100%" class="table">
+                                <thead>
+                                <tr>
+                                    <th><input type="checkbox" name="checkall"/></th>
+                                    <th width="25%">Invoice</th>
+                                    <th width="20%">Customer Name</th>
+                                    <th width="20%">Issued Date</th>
+                                    <th width="15%">Details</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <?php $sld=0;$batches = $override->getNoRepeat('assigned_stock','batch_id', 'user_id',$_GET['uid']);
+                                foreach ($batches as $batch){
+                                    $sold = $override->getSumV('frame_sale','quantity','batch_id',$batch['batch_id']);
+                                    $staff=$override->get('user','id',$_GET['uid']);
+                                    $batch_name = $override->get('batch','id',$batch['batch_id'])[0]['name'];
+                                    $aStock=$override->get('assigned_stock','batch_id',$batch['batch_id']);
+                                    ?>
+                                    <tr>
+                                        <td><input type="checkbox" name="checkbox"/></td>
+                                        <td><a href="#"> <?=$batch_name?></a></td>
+                                        <td><?php if($sold[0]['SUM(quantity)']){$sld=$sold[0]['SUM(quantity)'];echo $sold[0]['SUM(quantity)'];}else{echo 0;}?></td>
+                                        <td><?=($aStock[0]['quantity']-$sld)?></td>
+
+                                        <td><a href="info.php?id=3&uid=<?=$staff[0]['id']?>&bid=<?=$batch['batch_id']?>">Details</a> </td>
+                                    </tr>
+                                <?php }?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 <?php }?>
             </div>
 

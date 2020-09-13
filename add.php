@@ -300,6 +300,12 @@ if($user->isLoggedIn()) {
                 $assigned_stock=$override->selectData('assigned_stock','batch_id',Input::get('batch_id'),'brand_id',Input::get('brand_id'),'user_id',$user->data()->id);
                 $stocks_sold=$override->getSumV3('frame_sale','quantity','batch_id',Input::get('batch_id'),'brand_id',Input::get('brand_id'),'user_id',$user->data()->id);
                 $avl=$assigned_stock[0]['quantity'] - $stocks_sold[0]['SUM(quantity)'];
+                $invoice = $random->get_rand_numbers(6);
+                //$user->updateRecord('frame_sale',array('invoice'=>$invoice),3);
+                $checkInvNo = $override->get('frame_sale','invoice',$invoice);
+                while($override->unique('frame_sale','invoice',$invoice) == true){
+                    $invoice = $random->get_rand_numbers(6);
+                }
                 if(Input::get('quantity') <= $avl){
                     try {
                         $user->createRecord('frame_sale', array(
@@ -310,7 +316,7 @@ if($user->isLoggedIn()) {
                             'quantity' => Input::get('quantity'),
                             'pay_type' => Input::get('pay_type'),
                             'sale_date' => date('Y-m-d'),
-                            'invoice' => '',
+                            'invoice' => $invoice,
                             'status' => 1,
                             'user_id'=>$user->data()->id
                         ));
@@ -728,7 +734,7 @@ if($user->isLoggedIn()) {
                                     </div>
                                 </div>
                                 <div class="row-form clearfix">
-                                    <div class="col-md-3">Price per Frame:</div>
+                                    <div class="col-md-3">Batch Total Cost:</div>
                                     <div class="col-md-9">
                                         <input value="" class="validate[required]" type="text" name="price" id="price"/>
                                     </div>
