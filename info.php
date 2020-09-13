@@ -396,30 +396,24 @@ if($user->isLoggedIn()) {
                             <table cellpadding="0" cellspacing="0" width="100%" class="table">
                                 <thead>
                                 <tr>
-                                    <th><input type="checkbox" name="checkall"/></th>
-                                    <th width="25%">Invoice</th>
                                     <th width="20%">Customer Name</th>
-                                    <th width="20%">Issued Date</th>
+                                    <th width="15%">Invoice</th>
+                                    <th width="10%">Issued Date</th>
+                                    <th width="30"> Note</th>
                                     <th width="15%">Details</th>
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <?php $sld=0;$batches = $override->getNoRepeat('assigned_stock','batch_id', 'user_id',$_GET['uid']);
-                                foreach ($batches as $batch){
-                                    $sold = $override->getSumV('frame_sale','quantity','batch_id',$batch['batch_id']);
-                                    $staff=$override->get('user','id',$_GET['uid']);
-                                    $batch_name = $override->get('batch','id',$batch['batch_id'])[0]['name'];
-                                    $aStock=$override->get('assigned_stock','batch_id',$batch['batch_id']);
-                                    ?>
-                                    <tr>
-                                        <td><input type="checkbox" name="checkbox"/></td>
-                                        <td><a href="#"> <?=$batch_name?></a></td>
-                                        <td><?php if($sold[0]['SUM(quantity)']){$sld=$sold[0]['SUM(quantity)'];echo $sold[0]['SUM(quantity)'];}else{echo 0;}?></td>
-                                        <td><?=($aStock[0]['quantity']-$sld)?></td>
 
-                                        <td><a href="info.php?id=3&uid=<?=$staff[0]['id']?>&bid=<?=$batch['batch_id']?>">Details</a> </td>
+                                    <tr>
+
+                                        <td></td>
+                                        <td><a href="#"> 12345</a></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td><a href="info.php">Details</a> </td>
                                     </tr>
-                                <?php }?>
+
                                 </tbody>
                             </table>
                         </div>
