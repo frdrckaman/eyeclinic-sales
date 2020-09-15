@@ -317,6 +317,7 @@ if($user->isLoggedIn()) {
                             'pay_type' => Input::get('pay_type'),
                             'sale_date' => date('Y-m-d'),
                             'invoice' => $invoice,
+                            'note' => Input::get('note'),
                             'status' => 1,
                             'user_id'=>$user->data()->id
                         ));
@@ -329,6 +330,25 @@ if($user->isLoggedIn()) {
                     $errorMessage='Insufficient Amount, it must be less or equal to stock batch amount';
                 }
             } else {
+                $pageError = $validate->errors();
+            }
+        }
+        elseif (Input::get('search')){
+            $validate = new validate();
+            $validate = $validate->check($_POST, array(
+                'start_date' => array(
+                    'required' => true,
+                ),
+                'end_date' => array(
+                    'required' => true,
+                )
+            ));
+            if ($validate->passed()) {
+                $star=Input::get('start_date');
+                $end=Input::get('end_date');
+                $url='info.php?id=10&s='.$star.'&e='.$end;
+                Redirect::to($url);
+            }else {
                 $pageError = $validate->errors();
             }
         }
@@ -356,93 +376,9 @@ if($user->isLoggedIn()) {
 
             <ul class="breadcrumb">
                 <li><a href="#">Simple Admin</a> <span class="divider">></span></li>
-                <li class="active">Dashboard</li>
+                <li class="active">Add Info</li>
             </ul>
-            <ul class="buttons">
-                <li>
-                    <a href="#" class="link_bcPopupList"><span class="glyphicon glyphicon-user"></span><span class="text">Users list</span></a>
-
-                    <div id="bcPopupList" class="popup">
-                        <div class="head clearfix">
-                            <div class="arrow"></div>
-                            <span class="isw-users"></span>
-                            <span class="name">List users</span>
-                        </div>
-                        <div class="body-fluid users">
-
-                            <div class="item clearfix">
-                                <div class="image"><a href="#"><img src="img/users/aqvatarius_s.jpg" width="32"/></a></div>
-                                <div class="info">
-                                    <a href="#" class="name">Aqvatarius</a>
-                                    <span>online</span>
-                                </div>
-                            </div>
-
-                            <div class="item clearfix">
-                                <div class="image"><a href="#"><img src="img/users/olga_s.jpg" width="32"/></a></div>
-                                <div class="info">
-                                    <a href="#" class="name">Olga</a>
-                                    <span>online</span>
-                                </div>
-                            </div>
-
-                            <div class="item clearfix">
-                                <div class="image"><a href="#"><img src="img/users/alexey_s.jpg" width="32"/></a></div>
-                                <div class="info">
-                                    <a href="#" class="name">Alexey</a>
-                                    <span>online</span>
-                                </div>
-                            </div>
-
-                            <div class="item clearfix">
-                                <div class="image"><a href="#"><img src="img/users/dmitry_s.jpg" width="32"/></a></div>
-                                <div class="info">
-                                    <a href="#" class="name">Dmitry</a>
-                                    <span>online</span>
-                                </div>
-                            </div>
-
-                            <div class="item clearfix">
-                                <div class="image"><a href="#"><img src="img/users/helen_s.jpg" width="32"/></a></div>
-                                <div class="info">
-                                    <a href="#" class="name">Helen</a>
-                                </div>
-                            </div>
-
-                            <div class="item clearfix">
-                                <div class="image"><a href="#"><img src="img/users/alexander_s.jpg" width="32"/></a></div>
-                                <div class="info">
-                                    <a href="#" class="name">Alexander</a>
-                                </div>
-                            </div>
-
-                        </div>
-                        <div class="footer">
-                            <button class="btn btn-default" type="button">Add new</button>
-                            <button class="btn btn-danger link_bcPopupList" type="button">Close</button>
-                        </div>
-                    </div>
-
-                </li>
-                <li>
-                    <a href="#" class="link_bcPopupSearch"><span class="glyphicon glyphicon-search"></span><span class="text">Search</span></a>
-
-                    <div id="bcPopupSearch" class="popup">
-                        <div class="head clearfix">
-                            <div class="arrow"></div>
-                            <span class="isw-zoom"></span>
-                            <span class="name">Search</span>
-                        </div>
-                        <div class="body search">
-                            <input type="text" placeholder="Some text for search..." name="search"/>
-                        </div>
-                        <div class="footer">
-                            <button class="btn btn-default" type="button">Search</button>
-                            <button class="btn btn-danger link_bcPopupSearch" type="button">Close</button>
-                        </div>
-                    </div>
-                </li>
-            </ul>
+            <?php include 'pageInfo.php'?>
         </div>
 
         <div class="workplace">
@@ -506,7 +442,8 @@ if($user->isLoggedIn()) {
                                     <div class="col-md-3">Position</div>
                                     <div class="col-md-9">
                                         <select name="position" id="s2_1" style="width: 100%;">
-                                            <option value="Admin">Admin</option>
+                                            <option value="1">Admin</option>
+                                            <option value="2">Sales Personnel</option>
                                         </select>
                                     </div>
                                 </div>
@@ -659,7 +596,7 @@ if($user->isLoggedIn()) {
                     <div class="col-md-offset-1 col-md-8">
                         <div class="head clearfix">
                             <div class="isw-ok"></div>
-                            <h1>Add Stock</h1>
+                            <h1>Add Stock Batch</h1>
                         </div>
                         <div class="block-fluid">
                             <form id="validation" method="post" >
@@ -711,7 +648,7 @@ if($user->isLoggedIn()) {
                     <div class="col-md-offset-1 col-md-8">
                         <div class="head clearfix">
                             <div class="isw-ok"></div>
-                            <h1>Add Stock Batch</h1>
+                            <h1>Add Batch</h1>
                         </div>
                         <div class="block-fluid">
                             <form id="validation" method="post" >
@@ -806,9 +743,51 @@ if($user->isLoggedIn()) {
                                         <input value="" class="validate[required]" type="text" name="quantity" id="quantity"/>
                                     </div>
                                 </div>
-
+                                <div class="row-form clearfix">
+                                    <div class="col-md-3">Note:</div>
+                                    <div class="col-md-9"><textarea name="note" placeholder="Sales notes..."></textarea></div>
+                                </div>
                                 <div class="footer tar">
                                     <input type="submit" name="frame_sale" value="Submit" class="btn btn-default">
+                                </div>
+
+                            </form>
+                        </div>
+
+                    </div>
+                <?php }elseif ($_GET['id'] == 8){?>
+                    <div class="col-md-offset-1 col-md-8">
+                        <div class="head clearfix">
+                            <div class="isw-ok"></div>
+                            <h1>Search Report</h1>
+                        </div>
+                        <div class="block-fluid">
+                            <form id="validation" method="post" >
+<!--                                <div class="row-form clearfix">-->
+<!--                                    <div class="col-md-3">Report Type</div>-->
+<!--                                    <div class="col-md-9">-->
+<!--                                        <select name="batch_id" id="s2_1" style="width: 100%;" required>-->
+<!--                                            <option value="">Select</option>-->
+<!---->
+<!--                                        </select>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+                                <div class="row-form clearfix">
+                                    <div class="col-md-3">Start Date:</div>
+                                    <div class="col-md-9">
+                                        <input value="" class="validate[required,custom[date]]" type="text" name="start_date" id="date"/>
+                                        <span>Example: 2010-12-01</span>
+                                    </div>
+                                </div>
+                                <div class="row-form clearfix">
+                                    <div class="col-md-3">End Date:</div>
+                                    <div class="col-md-9">
+                                        <input value="" class="validate[required,custom[date]]" type="text" name="end_date" id="date1"/>
+                                        <span>Example: 2010-12-01</span>
+                                    </div>
+                                </div>
+                                <div class="footer tar">
+                                    <input type="submit" name="search" value="Search" class="btn btn-default">
                                 </div>
 
                             </form>
@@ -822,6 +801,11 @@ if($user->isLoggedIn()) {
         </div>
     </div>
 </div>
+<script>
+    if ( window.history.replaceState ) {
+        window.history.replaceState( null, null, window.location.href );
+    }
+</script>
 </body>
 
 </html>

@@ -20,8 +20,8 @@ foreach ($override->getData('assigned_stock') as $stock){
             <img src="img/users/no-image.jpg" class="img-thumbnail"/>
         </div>
         <ul class="control">
-            <li><span class="glyphicon glyphicon-comment"></span> <a href="#">Messages</a> <a href="#" class="caption red">12</a></li>
-            <li><span class="glyphicon glyphicon-cog"></span> <a href="#">Settings</a></li>
+            <li><span class="glyphicon glyphicon-comment"></span> <a href="#">Messages</a></li>
+            <li><span class="glyphicon glyphicon-cog"></span> <a href="profile.php">Profile</a></li>
             <li><span class="glyphicon glyphicon-share-alt"></span> <a href="logout.php">Logout</a></li>
         </ul>
         <div class="info">
@@ -35,85 +35,134 @@ foreach ($override->getData('assigned_stock') as $stock){
                 <span class="isw-grid"></span><span class="text">Dashboard</span>
             </a>
         </li>
-        <li class="active">
-            <a href="add.php?id=6">
-                <span class="isw-attachment"></span><span class="text">Add Batch</span>
-            </a>
-        </li>
-        <li class="active">
-            <a href="add.php?id=5">
-                <span class="isw-archive"></span><span class="text">Add Stock Batch</span>
-            </a>
-        </li>
-<!--        <li class="active">-->
-<!--            <a href="add.php?id=3">-->
-<!--                <span class="isw-list"></span><span class="text">Add Frame</span>-->
-<!--            </a>-->
-<!--        </li>-->
-        <li>
-            <a href="add.php?id=4">
-                <span class="isw-archive"></span><span class="text">Assign Stock</span>
-            </a>
-        </li>
-        <li>
-            <a href="info.php?id=1">
-                <span class="isw-settings"></span><span class="text">Stock Management</span>
-            </a>
-        </li>
-
-        <li>
-            <a href="add.php?id=1">
-                <span class="isw-user"></span><span class="text">Add staff</span>
-            </a>
-        </li>
-        <li>
-            <a href="#">
-                <span class="isw-users"></span><span class="text">Manage staff</span>
-            </a>
-        </li>
-
-        <li>
-            <a href="add.php?id=2">
-                <span class="isw-graph"></span><span class="text">Add Clinic Branch</span>
-            </a>
-        </li>
-        <li>
-            <a href="#">
-                <span class="isw-text_document"></span><span class="text">Manage Clinic Branch</span>
-            </a>
-        </li>
-
+        <?php if($user->data()->position == 1){?>
         <li class="openable">
-            <a href="#"><span class="isw-zoom"></span><span class="text">Reports</span></a>
+            <a href="#"><span class="isw-attachment"></span><span class="text">Frame Batch</span></a>
+            <ul>
+                <li class="">
+                    <a href="add.php?id=6">
+                        <span class="glyphicon glyphicon-plus"></span><span class="text">Add Batch</span>
+                    </a>
+                </li>
+                <li class="">
+                    <a href="add.php?id=5">
+                        <span class="glyphicon glyphicon-plus-sign"></span><span class="text">Add Stock Batch</span>
+                    </a>
+                </li>
+                <li class="">
+                    <a href="info.php?id=7">
+                        <span class="glyphicon glyphicon-grain"></span><span class="text">Manage Batch</span>
+                    </a>
+                </li>
+            </ul>
+        </li>
+        <li class="openable">
+            <a href="#"><span class="isw-users"></span><span class="text">Staff</span></a>
             <ul>
                 <li>
-                    <a href="#">
-                        <span class="glyphicon glyphicon-user"></span><span class="text">Staff Report</span>
+                    <a href="add.php?id=1">
+                        <span class="glyphicon glyphicon-user"></span><span class="text">Add staff</span>
                     </a>
                 </li>
                 <li>
                     <a href="#">
-                        <span class="glyphicon glyphicon-share"></span><span class="text">Sales Report</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="#">
-                        <span class="glyphicon glyphicon-download"></span><span class="text">Purchase Report</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="#">
-                        <span class="glyphicon glyphicon-download-alt"></span><span class="text">Stock Report</span>
+                        <span class="glyphicon glyphicon-registration-mark"></span><span class="text">Manage staff</span>
                     </a>
                 </li>
             </ul>
         </li>
         <li>
+            <a href="add.php?id=4">
+                <span class="isw-archive"></span><span class="text">Assign Stock</span>
+            </a>
+        </li>
+        <li class="openable">
+            <a href="#"><span class="isw-bookmark"></span><span class="text">Clinic Branch</span></a>
+            <ul>
+                <li>
+                    <a href="add.php?id=2">
+                        <span class="glyphicon glyphicon-plus"></span><span class="text">Add Clinic Branch</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <span class="glyphicon glyphicon-floppy-disk"></span><span class="text">Manage Clinic Branch</span>
+                    </a>
+                </li>
+            </ul>
+        </li>
+        <li class="openable">
+            <a href="#"><span class="isw-zoom"></span><span class="text">Reports</span></a>
+            <ul>
+                <li>
+                    <a href="add.php?id=8" data-toggle="modal">
+                        <span class="glyphicon glyphicon-search"></span><span class="text">Search Report</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="info.php?id=1">
+                        <span class="glyphicon glyphicon-user"></span><span class="text">Staff Report</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="info.php?id=5">
+                        <span class="glyphicon glyphicon-share"></span><span class="text">Sales Report</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="info.php?id=7">
+                        <span class="glyphicon glyphicon-download"></span><span class="text">Purchase Report</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="info.php?id=11">
+                        <span class="glyphicon glyphicon-file"></span><span class="text">Cash Report</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="info.php?id=12">
+                        <span class="glyphicon glyphicon-open-file"></span><span class="text">Credit Report</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="info.php?id=9">
+                        <span class="glyphicon glyphicon-download-alt"></span><span class="text">Stock Report</span>
+                    </a>
+                </li>
+            </ul>
+        </li>
+            <li>
+                <a href="add.php?id=7">
+                    <span class="isw-text_document"></span><span class="text">Sale Frame</span>
+                </a>
+            </li>
+            <li>
+                <a href="info.php?id=13">
+                    <span class="isw-folder"></span><span class="text">My Sock</span>
+                </a>
+            </li>
+            <li>
+                <a href="info.php?id=15">
+                    <span class="isw-fullscreen"></span><span class="text">My Sales</span>
+                </a>
+            </li>
+        <?php }elseif ($user->data()->position == 2){?>
+        <li>
             <a href="add.php?id=7">
                 <span class="isw-text_document"></span><span class="text">Sale Frame</span>
             </a>
         </li>
-
+        <li>
+            <a href="info.php?id=13">
+                <span class="isw-folder"></span><span class="text">My Sock</span>
+            </a>
+        </li>
+        <li>
+            <a href="info.php?id=15">
+                <span class="isw-fullscreen"></span><span class="text">My Sales</span>
+            </a>
+        </li>
+        <?php }?>
     </ul>
 
     <div class="dr"><span></span></div>
@@ -155,6 +204,43 @@ foreach ($override->getData('assigned_stock') as $stock){
 <!--            </div>-->
         </div>
 
+    </div>
+
+    <div class="modal fade" id="fModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4>Search Report</h4>
+                </div>
+                <form method="post">
+                    <div class="modal-body modal-body-np">
+                        <div class="row">
+                            <div class="block-fluid">
+                                <div class="row-form clearfix">
+                                    <div class="col-md-3">Start Date:</div>
+                                    <div class="col-md-9">
+                                        <input value="" class="validate[required,custom[date]]" type="text" name="start" id="date"/>
+                                        <span>Example: 2010-12-01</span>
+                                    </div>
+                                </div>
+                                <div class="row-form clearfix">
+                                    <div class="col-md-3">End Date:</div>
+                                    <div class="col-md-9">
+                                        <input value="" class="validate[required,custom[date]]" type="text" name="start" id="date"/>
+                                        <span>Example: 2010-12-01</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="submit" class="btn btn-info" value="Search" aria-hidden="true">
+                        <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">Close</button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
 
 </div>

@@ -34,53 +34,7 @@ if($user->isLoggedIn()) {
                 <li><a href="#">Dashboard</a> <span class="divider">></span></li>
             </ul>
 
-            <ul class="buttons">
-                <li>
-                    <a href="#" class="link_bcPopupList"><span class="glyphicon glyphicon-user"></span><span class="text">Users list</span></a>
-
-                    <div id="bcPopupList" class="popup">
-                        <div class="head clearfix">
-                            <div class="arrow"></div>
-                            <span class="isw-users"></span>
-                            <span class="name">List users</span>
-                        </div>
-                        <div class="body-fluid users">
-                            <?php if($user->data()->accessLevel == 1){foreach ($override->getData('user') as $usr){?>
-                                <div class="item clearfix">
-                                    <div class="image"><a href="#"><img src="img/users/no-image.jpg" width="32"/></a></div>
-                                    <div class="info">
-                                        <a href="#" class="name"><?=$usr['firstname'].' '.$usr['lastname']?></a>
-                                        <span></span>
-                                    </div>
-                                </div>
-                            <?php }}?>
-                        </div>
-                        <div class="footer">
-                            <a href="add.php?id=1" class="btn btn-default" type="button">Add new</a>
-                            <button class="btn btn-danger link_bcPopupList" type="button">Close</button>
-                        </div>
-                    </div>
-
-                </li>
-                <li>
-                    <a href="#" class="link_bcPopupSearch"><span class="glyphicon glyphicon-search"></span><span class="text">Search</span></a>
-
-                    <div id="bcPopupSearch" class="popup">
-                        <div class="head clearfix">
-                            <div class="arrow"></div>
-                            <span class="isw-zoom"></span>
-                            <span class="name">Search</span>
-                        </div>
-                        <div class="body search">
-                            <input type="text" placeholder="Some text for search..." name="search"/>
-                        </div>
-                        <div class="footer">
-                            <button class="btn btn-default" type="button">Search</button>
-                            <button class="btn btn-danger link_bcPopupSearch" type="button">Close</button>
-                        </div>
-                    </div>
-                </li>
-            </ul>
+            <?php include 'pageInfo.php'?>
 
         </div>
 
@@ -132,52 +86,105 @@ if($user->isLoggedIn()) {
 
             <div class="row">
 
-                <div class="col-md-12">
-                    <div class="head clearfix">
-                        <div class="isw-grid"></div>
-                        <h1>Simple table</h1>
-                        <ul class="buttons">
-                            <li><a href="#" class="isw-download"></a></li>
-                            <li><a href="#" class="isw-attachment"></a></li>
-                            <li>
-                                <a href="#" class="isw-settings"></a>
-                                <ul class="dd-list">
-                                    <li><a href="#"><span class="isw-plus"></span> New document</a></li>
-                                    <li><a href="#"><span class="isw-edit"></span> Edit</a></li>
-                                    <li><a href="#"><span class="isw-delete"></span> Delete</a></li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="block-fluid">
-                        <table cellpadding="0" cellspacing="0" width="100%" class="table">
-                            <thead>
-                            <tr>
-                                <th><input type="checkbox" name="checkall"/></th>
-                                <th width="25%">Name</th>
-                                <th width="25%">Sold</th>
-                                <th width="25%">Remained</th>
-                                <th width="25%">Total</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <?php foreach ($override->getData('assigned_stock') as $aStock){
-                                $staff=$override->get('user','id',$aStock['user_id'])?>
+                <?php if($user->data()->position == 1){?>
+                    <div class="col-md-12">
+                        <div class="head clearfix">
+                            <div class="isw-grid"></div>
+                            <h1>Simple table</h1>
+                            <ul class="buttons">
+                                <li><a href="#" class="isw-download"></a></li>
+                                <li><a href="#" class="isw-attachment"></a></li>
+                                <li>
+                                    <a href="#" class="isw-settings"></a>
+                                    <ul class="dd-list">
+                                        <li><a href="#"><span class="isw-plus"></span> New document</a></li>
+                                        <li><a href="#"><span class="isw-edit"></span> Edit</a></li>
+                                        <li><a href="#"><span class="isw-delete"></span> Delete</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="block-fluid">
+                            <table cellpadding="0" cellspacing="0" width="100%" class="table">
+                                <thead>
                                 <tr>
-                                    <td><input type="checkbox" name="checkbox"/></td>
-                                    <td><?=$staff[0]['firstname'].' '.$staff[0]['lastname']?></td>
-                                    <td>0</td>
-                                    <td><?=$aStock['quantity']?></td>
-                                    <td><?=$aStock['quantity']?></td>
+                                    <th><input type="checkbox" name="checkall"/></th>
+                                    <th width="25%">Name</th>
+                                    <th width="25%">Sold</th>
+                                    <th width="25%">Remained</th>
+                                    <th width="25%">Total</th>
                                 </tr>
-                            <?php }?>
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                <?php foreach ($override->getData('assigned_stock') as $aStock){
+                                    $staff=$override->get('user','id',$aStock['user_id'])?>
+                                    <tr>
+                                        <td><input type="checkbox" name="checkbox"/></td>
+                                        <td><?=$staff[0]['firstname'].' '.$staff[0]['lastname']?></td>
+                                        <td>0</td>
+                                        <td><?=$aStock['quantity']?></td>
+                                        <td><?=$aStock['quantity']?></td>
+                                    </tr>
+                                <?php }?>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                </div>
+                <?php }elseif ($user->data()->position == 2){?>
+                    <div class="col-md-12">
+                        <div class="head clearfix">
+                            <div class="isw-grid"></div>
+                            <h1>My Sales Report</h1>
+                            <ul class="buttons">
+                                <li><a href="#" class="isw-download"></a></li>
+                                <li><a href="#" class="isw-attachment"></a></li>
+                                <li>
+                                    <a href="#" class="isw-settings"></a>
+                                    <ul class="dd-list">
+                                        <li><a href="#"><span class="isw-plus"></span> New document</a></li>
+                                        <li><a href="#"><span class="isw-edit"></span> Edit</a></li>
+                                        <li><a href="#"><span class="isw-delete"></span> Delete</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="block-fluid">
+                            <table cellpadding="0" cellspacing="0" width="100%" class="table">
+                                <thead>
+                                <tr>
+                                    <th width="15%">Customer Name</th>
+                                    <th width="10%">Invoice</th>
+                                    <th width="10%">Batch</th>
+                                    <th width="10%">Brand</th>
+                                    <th width="10%">Quantity</th>
+                                    <th width="10%">Issued Date</th>
+                                    <th width="20"> Note</th>
+                                    <th width="15%">Staff</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <?php foreach ($override->get('frame_sale','user_id',$user->data()->id) as $sale){
+                                    $brand=$override->get('frame_brand','id',$sale['brand_id']);
+                                    $batch=$override->get('batch','id',$sale['batch_id']);
+                                    ?>
+                                    <tr>
+                                        <td><a href="#"><?=$sale['client_name']?></a></td>
+                                        <td> <?=$sale['invoice']?></td>
+                                        <td><?=$batch[0]['name'].' ('.$batch[0]['batch_id'].')'?></td>
+                                        <td><?=$brand[0]['name']?></td>
+                                        <td><?=$sale['quantity']?></td>
+                                        <td><?=$sale['sale_date']?></td>
+                                        <td><?=$sale['note']?></td>
+                                        <td><?=$user->data()->firstname.' '.$user->data()->lastname?></td>
+                                    </tr>
+                                <?php }?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                <?php }?>
 
             </div>
-
 
             <div class="dr"><span></span></div>
 
