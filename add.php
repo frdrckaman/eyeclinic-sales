@@ -295,37 +295,71 @@ if($user->isLoggedIn()) {
                 'pay_type' => array(
                     'required' => true,
                 ),
+                'cash' => array(
+                    'required' => true,
+                ),
+                'invoice_no' => array(
+                    'required' => true,
+                ),
+                'delivery_note' => array(
+                    'required' => true,
+                ),
             ));
             if ($validate->passed()) {$avl=0;$sld=0;
                 $assigned_stock=$override->selectData('assigned_stock','batch_id',Input::get('batch_id'),'brand_id',Input::get('brand_id'),'user_id',$user->data()->id);
                 $stocks_sold=$override->getSumV3('frame_sale','quantity','batch_id',Input::get('batch_id'),'brand_id',Input::get('brand_id'),'user_id',$user->data()->id);
                 $avl=$assigned_stock[0]['quantity'] - $stocks_sold[0]['SUM(quantity)'];
-                $invoice = $random->get_rand_numbers(6);
-                //$user->updateRecord('frame_sale',array('invoice'=>$invoice),3);
-                $checkInvNo = $override->get('frame_sale','invoice',$invoice);
-                while($override->unique('frame_sale','invoice',$invoice) == true){
-                    $invoice = $random->get_rand_numbers(6);
-                }
+                $price=$override->getNews('stock_batch','batch_id',Input::get('batch_id'),'brand_id',Input::get('brand_id'))[0];
+                $exp=Input::get('quantity')*$price['cost'];
+//                $invoice = $random->get_rand_numbers(6);
+//                $user->updateRecord('frame_sale',array('invoice'=>$invoice),3);
+//                $checkInvNo = $override->get('frame_sale','invoice',$invoice);
+//                while($override->unique('frame_sale','invoice',$invoice) == true){
+//                    $invoice = $random->get_rand_numbers(6);
+//                }
                 if(Input::get('quantity') <= $avl){
-                    try {
-                        $user->createRecord('frame_sale', array(
-                            'client_name' => Input::get('client_name'),
-                            'client_phone' => Input::get('client_phone'),
-                            'batch_id' => Input::get('batch_id'),
-                            'brand_id' => Input::get('brand_id'),
-                            'quantity' => Input::get('quantity'),
-                            'pay_type' => Input::get('pay_type'),
-                            'sale_date' => date('Y-m-d'),
-                            'invoice' => $invoice,
-                            'note' => Input::get('note'),
-                            'status' => 1,
-                            'user_id'=>$user->data()->id
-                        ));
-                        $successMessage = 'Frame Successful Sold';
+                    if($price['cost'] < $exp || $price['cost'] > $exp){
+                        $errorMessage='Payment amount is less or greater than Expected amount';
+                    }else{
+                        try {
+                            $user->createRecord('frame_sale', array(
+                                'client_name' => Input::get('client_name'),
+                                'client_phone' => Input::get('client_phone'),
+                                'batch_id' => Input::get('batch_id'),
+                                'brand_id' => Input::get('brand_id'),
+                                'quantity' => Input::get('quantity'),
+                                'pay_type' => Input::get('pay_type'),
+                                'sale_date' => date('Y-m-d'),
+                                'invoice' => Input::get('invoice_no'),
+                                'delivery_note' => Input::get('delivery_note'),
+                                'note' => Input::get('note'),
+                                'status' => 1,
+                                'user_id'=>$user->data()->id
+                            ));
+                            $lid=$override->lastRow('frame_sale','id')[0];
 
-                    } catch (Exception $e) {
-                        die($e->getMessage());
+
+                            $user->createRecord('payment', array(
+                                'pay_amount' => Input::get('cash'),
+                                'required_amount' => $exp,
+                                'pay_date' => date('Y-m-d'),
+                                'status' => 1,
+                                'sale_id' => $lid['id'],
+                                'user_id'=>$user->data()->id
+                            ));
+                            $user->createRecord('payment_rec', array(
+                                'pay_amount' => Input::get('cash'),
+                                'pay_date' => date('Y-m-d'),
+                                'sale_id' => $lid['id'],
+                                'user_id'=>$user->data()->id
+                            ));
+                            $successMessage = 'Frame Successful Sold';
+
+                        } catch (Exception $e) {
+                            die($e->getMessage());
+                        }
                     }
+
                 }else{
                     $errorMessage='Insufficient Amount, it must be less or equal to stock batch amount';
                 }
@@ -349,6 +383,178 @@ if($user->isLoggedIn()) {
                 $url='info.php?id=10&s='.$star.'&e='.$end;
                 Redirect::to($url);
             }else {
+                $pageError = $validate->errors();
+            }
+        }
+        elseif (Input::get('frame_sale_cus')){
+            $validate = $validate->check($_POST, array(
+                'batch_id' => array(
+                    'required' => true,
+                ),
+                'brand_id' => array(
+                    'required' => true,
+                ),
+                'customer' => array(
+                    'required' => true,
+                ),
+                'client_phone' => array(
+                    'required' => true,
+                ),
+                'quantity' => array(
+                    'required' => true,
+                ),
+                'pay_type' => array(
+                    'required' => true,
+                ),
+                'invoice_no' => array(
+                    'required' => true,
+                ),
+                'delivery_note' => array(
+                    'required' => true,
+                ),
+            ));
+            if ($validate->passed()) {$avl=0;$sld=0;
+                $assigned_stock=$override->selectData('assigned_stock','batch_id',Input::get('batch_id'),'brand_id',Input::get('brand_id'),'user_id',$user->data()->id);
+                $stocks_sold=$override->getSumV3('frame_sale','quantity','batch_id',Input::get('batch_id'),'brand_id',Input::get('brand_id'),'user_id',$user->data()->id);
+                $avl=$assigned_stock[0]['quantity'] - $stocks_sold[0]['SUM(quantity)'];
+                $price=$override->getNews('stock_batch','batch_id',Input::get('batch_id'),'brand_id',Input::get('brand_id'))[0];
+                $exp=Input::get('quantity')*$price['cost'];
+//                $invoice = $random->get_rand_numbers(6);
+//                $user->updateRecord('frame_sale',array('invoice'=>$invoice),3);
+//                $checkInvNo = $override->get('frame_sale','invoice',$invoice);
+//                while($override->unique('frame_sale','invoice',$invoice) == true){
+//                    $invoice = $random->get_rand_numbers(6);
+//                }
+                if(Input::get('quantity') <= $avl){
+                    if($price['cost'] < $exp || $price['cost'] > $exp){
+                        $errorMessage='Payment amount is less or greater than Expected amount';
+                    }else{
+                        try {
+                            $user->createRecord('frame_sale', array(
+                                'client_name' => '',
+                                'client_phone' => Input::get('client_phone'),
+                                'batch_id' => Input::get('batch_id'),
+                                'brand_id' => Input::get('brand_id'),
+                                'quantity' => Input::get('quantity'),
+                                'pay_type' => Input::get('pay_type'),
+                                'sale_date' => date('Y-m-d'),
+                                'invoice' => Input::get('invoice_no'),
+                                'delivery_note' => Input::get('delivery_note'),
+                                'customer_id' => Input::get('customer'),
+                                'note' => Input::get('note'),
+                                'status' => 1,
+                                'user_id'=>$user->data()->id
+                            ));
+
+                            $lid=$override->lastRow('frame_sale','id')[0];
+                            if(Input::get('cash') == $exp){$status=1;}else{$status=0;}
+                            $user->createRecord('payment', array(
+                                'pay_amount' => Input::get('cash'),
+                                'required_amount' => $exp,
+                                'pay_date' => date('Y-m-d'),
+                                'status' => $status,
+                                'sale_id' => $lid['id'],
+                                'user_id'=>$user->data()->id
+                            ));
+                            $user->createRecord('payment_rec', array(
+                                'pay_amount' => Input::get('cash'),
+                                'pay_date' => date('Y-m-d'),
+                                'sale_id' => $lid['id'],
+                                'user_id'=>$user->data()->id
+                            ));
+                            $successMessage = 'Frame Successful Sold';
+
+                        } catch (Exception $e) {
+                            die($e->getMessage());
+                        }
+                    }
+                }else{
+                    $errorMessage='Insufficient Amount, it must be less or equal to stock batch amount';
+                }
+            } else {
+                $pageError = $validate->errors();
+            }
+        }
+        elseif (Input::get('add_customer')){
+            $validate = new validate();
+            $validate = $validate->check($_POST, array(
+                'name' => array(
+                    'required' => true,
+                ),
+                'tin' => array(
+                    'required' => true,
+                ),
+                'phone_number' => array(
+                    'required' => true,
+                    'unique' => 'customer'
+                ),
+                'email_address' => array(
+                    'required' => true,
+                    'unique' => 'customer'
+                ),
+                'location' => array(
+                    'required' => true,
+                ),
+            ));
+            if ($validate->passed()) {
+                $salt = $random->get_rand_alphanumeric(32);
+                $password = '12345678';
+
+                try {
+                    $user->createRecord('customer', array(
+                        'name' => Input::get('name'),
+                        'tin' => Input::get('tin'),
+                        'phone_number' => Input::get('position'),
+                        'email_address' => Input::get('email_address'),
+                        'location' => Input::get('location'),
+                        'status' => 1,
+                    ));
+                    $successMessage = 'Customer Account Created Successful';
+
+                } catch (Exception $e) {
+                    die($e->getMessage());
+                }
+            } else {
+                $pageError = $validate->errors();
+            }
+        }
+        elseif (Input::get('pay_sale')){
+            $validate = $validate->check($_POST, array(
+                'customer' => array(
+                    'required' => true,
+                ),
+                'payment_batch' => array(
+                    'required' => true,
+                ),
+                'amount' => array(
+                    'required' => true,
+                ),
+            ));
+            if ($validate->passed()) {
+                $pid=$override->get('payment','id',Input::get('payment_batch'))[0];
+                $py=$pid['pay_amount']+Input::get('amount');
+                if($py <= $pid['required_amount']){
+                    if($py==$pid['required_amount']){$status=1;}else{$status=0;}
+                    try {
+                    $user->updateRecord('payment', array(
+                        'pay_amount' => $py,
+                        'status' => $status,
+                    ),$pid['id']);
+                    $user->createRecord('payment_rec', array(
+                        'pay_amount' => Input::get('amount'),
+                        'pay_date' => date('Y-m-d'),
+                        'sale_id' => $pid['sale_id'],
+                        'user_id'=>$user->data()->id
+                    ));
+                        $successMessage = 'Customer Account Created Successful';
+
+                    } catch (Exception $e) {
+                        die($e->getMessage());
+                    }
+                }else{
+                    $errorMessage='Payment Exceed the required Amount';
+                }
+            } else {
                 $pageError = $validate->errors();
             }
         }
@@ -399,7 +605,7 @@ if($user->isLoggedIn()) {
                 </div>
             <?php }?>
             <div class="row">
-                <?php if($_GET['id'] == 1){?>
+                <?php if($_GET['id'] == 1 && $user->data()->position == 1){?>
                     <div class="col-md-offset-1 col-md-8">
                         <div class="head clearfix">
                             <div class="isw-ok"></div>
@@ -461,7 +667,7 @@ if($user->isLoggedIn()) {
                         </div>
 
                     </div>
-                <?php }elseif ($_GET['id'] == 2){?>
+                <?php }elseif ($_GET['id'] == 2 && $user->data()->position == 1){?>
                     <div class="col-md-offset-1 col-md-8">
                         <div class="head clearfix">
                             <div class="isw-ok"></div>
@@ -496,7 +702,7 @@ if($user->isLoggedIn()) {
                         </div>
 
                     </div>
-                <?php }elseif ($_GET['id'] == 3){?>
+                <?php }elseif ($_GET['id'] == 3 && $user->data()->position == 1){?>
                     <div class="col-md-offset-1 col-md-8">
                         <div class="head clearfix">
                             <div class="isw-ok"></div>
@@ -536,7 +742,7 @@ if($user->isLoggedIn()) {
                         </div>
 
                     </div>
-                <?php }elseif ($_GET['id'] == 4){?>
+                <?php }elseif ($_GET['id'] == 4 && $user->data()->position == 1){?>
                     <div class="col-md-offset-1 col-md-8">
                         <div class="head clearfix">
                             <div class="isw-ok"></div>
@@ -592,7 +798,7 @@ if($user->isLoggedIn()) {
                         </div>
 
                     </div>
-                <?php }elseif ($_GET['id'] == 5){?>
+                <?php }elseif ($_GET['id'] == 5 && $user->data()->position == 1){?>
                     <div class="col-md-offset-1 col-md-8">
                         <div class="head clearfix">
                             <div class="isw-ok"></div>
@@ -644,7 +850,7 @@ if($user->isLoggedIn()) {
                         </div>
 
                     </div>
-                <?php }elseif ($_GET['id'] == 6){?>
+                <?php }elseif ($_GET['id'] == 6 && $user->data()->position == 1){?>
                     <div class="col-md-offset-1 col-md-8">
                         <div class="head clearfix">
                             <div class="isw-ok"></div>
@@ -733,7 +939,6 @@ if($user->isLoggedIn()) {
                                         <select name="pay_type" id="s2_2" style="width: 100%;" required>
                                             <option value="">Select Method</option>
                                             <option value="1">Cash</option>
-                                            <option value="2">Credit</option>
                                         </select>
                                     </div>
                                 </div>
@@ -744,18 +949,34 @@ if($user->isLoggedIn()) {
                                     </div>
                                 </div>
                                 <div class="row-form clearfix">
+                                    <div class="col-md-3">Invoice No.:</div>
+                                    <div class="col-md-9">
+                                        <input value="" class="validate[required]" type="text" name="invoice_no" id="invoice"/>
+                                    </div>
+                                </div>
+                                <div class="row-form clearfix">
+                                    <div class="col-md-3">Delivery Note No.:</div>
+                                    <div class="col-md-9">
+                                        <input value="" class="validate[required]" type="text" name="delivery_note" id="d_note"/>
+                                    </div>
+                                </div>
+                                <div class="row-form clearfix">
+                                    <div class="col-md-3">Cash Amount:</div>
+                                    <div class="col-md-9">
+                                        <input value="" class="validate[required]" type="number" name="cash" id="cash"/>
+                                    </div>
+                                </div>
+                                <div class="row-form clearfix">
                                     <div class="col-md-3">Note:</div>
                                     <div class="col-md-9"><textarea name="note" placeholder="Sales notes..."></textarea></div>
                                 </div>
                                 <div class="footer tar">
                                     <input type="submit" name="frame_sale" value="Submit" class="btn btn-default">
                                 </div>
-
                             </form>
                         </div>
-
                     </div>
-                <?php }elseif ($_GET['id'] == 8){?>
+                <?php }elseif ($_GET['id'] == 8 && $user->data()->position == 1){?>
                     <div class="col-md-offset-1 col-md-8">
                         <div class="head clearfix">
                             <div class="isw-ok"></div>
@@ -794,6 +1015,193 @@ if($user->isLoggedIn()) {
                         </div>
 
                     </div>
+                <?php }elseif ($_GET['id'] == 9){?>
+                    <div class="col-md-offset-1 col-md-8">
+                        <div class="head clearfix">
+                            <div class="isw-ok"></div>
+                            <h1>Sales Frame to Customer</h1>
+                        </div>
+                        <div class="block-fluid">
+                            <form id="validation" method="post" >
+                                <div class="row-form clearfix">
+                                    <div class="col-md-3">Select Batch</div>
+                                    <div class="col-md-9">
+                                        <select name="batch_id" id="s2_" style="width: 100%;" required>
+                                            <option value="">Select</option>
+                                            <?php foreach ($override->get('batch','status',1) as $batch){?>
+                                                <option value="<?=$batch['id']?>"><?=$batch['name']?></option>
+                                            <?php }?>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row-form clearfix">
+                                    <div class="col-md-3">Select Brand</div>
+                                    <div class="col-md-9">
+                                        <select name="brand_id" id="s2_2" style="width: 100%;" required>
+                                            <option value="">Select</option>
+                                            <?php foreach ($override->getData('frame_brand') as $brand){?>
+                                                <option value="<?=$brand['id']?>"><?=$brand['name']?></option>
+                                            <?php }?>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row-form clearfix">
+                                    <div class="col-md-3">Select Customer</div>
+                                    <div class="col-md-9">
+                                        <select name="customer" id="s2_1" style="width: 100%;" required>
+                                            <option value="">Select Customer</option>
+                                            <?php foreach ($override->getData('customer') as $customer){?>
+                                                <option value="<?=$customer['id']?>"><?=$customer['name']?></option>
+                                            <?php }?>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="row-form clearfix">
+                                    <div class="col-md-3">Client Phone:</div>
+                                    <div class="col-md-9">
+                                        <input value="" class="validate[required]" type="text" name="client_phone" id="client_phone"/>
+                                    </div>
+                                </div>
+                                <div class="row-form clearfix">
+                                    <div class="col-md-3">Payment Type</div>
+                                    <div class="col-md-9">
+                                        <select name="pay_type" id="s2_2" style="width: 100%;" required>
+                                            <option value="">Select Method</option>
+                                            <option value="1">Cash</option>
+                                            <option value="2">Credit</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row-form clearfix">
+                                    <div class="col-md-3">Quantity:</div>
+                                    <div class="col-md-9">
+                                        <input value="" class="validate[required]" type="number" name="quantity" id="quantity"/>
+                                    </div>
+                                </div>
+                                <div class="row-form clearfix">
+                                    <div class="col-md-3">Invoice No.:</div>
+                                    <div class="col-md-9">
+                                        <input value="" class="validate[required]" type="text" name="invoice_no" id="invoice"/>
+                                    </div>
+                                </div>
+                                <div class="row-form clearfix">
+                                    <div class="col-md-3">Delivery Note No.:</div>
+                                    <div class="col-md-9">
+                                        <input value="" class="validate[required]" type="text" name="delivery_note" id="d_note"/>
+                                    </div>
+                                </div>
+                                <div class="row-form clearfix">
+                                    <div class="col-md-3">Cash Amount:</div>
+                                    <div class="col-md-9">
+                                        <input value="" class="validate[required]" type="number" name="cash" id="cash"/>
+                                    </div>
+                                </div>
+                                <div class="row-form clearfix">
+                                    <div class="col-md-3">Note:</div>
+                                    <div class="col-md-9"><textarea name="note" placeholder="Sales notes..."></textarea></div>
+                                </div>
+                                <div class="footer tar">
+                                    <input type="submit" name="frame_sale_cus" value="Submit" class="btn btn-default">
+                                </div>
+
+                            </form>
+                        </div>
+
+                    </div>
+                <?php }elseif ($_GET['id'] == 10 && $user->data()->position == 1){?>
+                    <div class="col-md-offset-1 col-md-8">
+                        <div class="head clearfix">
+                            <div class="isw-ok"></div>
+                            <h1>Add Customer</h1>
+                        </div>
+                        <div class="block-fluid">
+                            <form id="validation" method="post" >
+
+                                <div class="row-form clearfix">
+                                    <div class="col-md-3">Name/Business Name:</div>
+                                    <div class="col-md-9">
+                                        <input value="" class="validate[required]" type="text" name="name" id="Business"/>
+                                    </div>
+                                </div>
+
+                                <div class="row-form clearfix">
+                                    <div class="col-md-3">TIN:</div>
+                                    <div class="col-md-9">
+                                        <input value="" class="validate[required]" type="text" name="tin" id="tin"/>
+                                    </div>
+                                </div>
+
+                                <div class="row-form clearfix">
+                                    <div class="col-md-3">Phone NUmber:</div>
+                                    <div class="col-md-9">
+                                        <input value="" class="validate[required]" type="text" name="phone_number" id="phone"/>
+                                    </div>
+                                </div>
+
+                                <div class="row-form clearfix">
+                                    <div class="col-md-3">E-mail Address:</div>
+                                    <div class="col-md-9"><input value="" class="validate[required,custom[email]]" type="text" name="email_address" id="email" />  <span>Example: someone@nowhere.com</span></div>
+                                </div>
+
+                                <div class="row-form clearfix">
+                                    <div class="col-md-3">Location:</div>
+                                    <div class="col-md-9"><textarea name="location" placeholder="Customer Location..."></textarea></div>
+                                </div>
+
+                                <div class="footer tar">
+                                    <input type="submit" name="add_customer" value="Submit" class="btn btn-default">
+                                </div>
+
+                            </form>
+                        </div>
+
+                    </div>
+                <?php }elseif ($_GET['id'] == 11){?>
+                    <div class="col-md-offset-1 col-md-8">
+                        <div class="head clearfix">
+                            <div class="isw-ok"></div>
+                            <h1>Add Customer Payment</h1>
+                        </div>
+                        <div class="block-fluid">
+                            <form id="validation" method="post" >
+                                <div class="row-form clearfix">
+                                    <div class="col-md-3">Select Customer</div>
+                                    <div class="col-md-9">
+                                        <select name="customer" id="s2_1" style="width: 100%;" required>
+                                            <option value="">Select Customer</option>
+                                            <?php foreach ($override->getNewsNoRepeat('payment','user_id','status',0,'user_id',$user->data()->id) as $customer){
+                                                $cname=$override->get('user','id',$customer['user_id'])[0];?>
+                                                <option value="<?=$cname['id']?>"><?=$cname['firstname'].' '.$cname['lastname']?></option>
+                                            <?php }?>
+                                        </select>
+                                    </div>
+                                </div>
+                                <span><img src="img/loaders/loader.gif" id="wait" title="loader.gif"/></span>
+                                <div class="row-form clearfix">
+                                    <div class="col-md-3">Select Payment Batch</div>
+                                    <div class="col-md-9">
+                                        <select name="payment_batch" id="s2_2" style="width: 100%;" required>
+
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="row-form clearfix">
+                                    <div class="col-md-3">Amount:</div>
+                                    <div class="col-md-9">
+                                        <input value="" class="validate[required]" type="number" name="amount" id="amount"/>
+                                    </div>
+                                </div>
+
+                                <div class="footer tar">
+                                    <input type="submit" name="pay_sale" value="Submit" class="btn btn-default">
+                                </div>
+
+                            </form>
+                        </div>
+
+                    </div>
                 <?php }?>
                 <div class="dr"><span></span></div>
             </div>
@@ -805,6 +1213,23 @@ if($user->isLoggedIn()) {
     if ( window.history.replaceState ) {
         window.history.replaceState( null, null, window.location.href );
     }
+    $(document).ready(function(){
+        $('#wait').hide();
+        $('#s2_1').change(function(){
+            var getUid = $(this).val();
+            $('#wait').show();
+            $.ajax({
+                url:"process.php?cnt=pay",
+                method:"GET",
+                data:{getUid:getUid},
+                success:function(data){
+                    $('#s2_2').html(data);
+                    $('#wait').hide();
+                }
+            });
+
+        });
+    });
 </script>
 </body>
 

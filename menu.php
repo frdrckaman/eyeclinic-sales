@@ -71,6 +71,21 @@ foreach ($override->getData('assigned_stock') as $stock){
                 </li>
             </ul>
         </li>
+            <li class="openable">
+                <a href="#"><span class="isw-user"></span><span class="text">Customers</span></a>
+                <ul>
+                    <li>
+                        <a href="add.php?id=10">
+                            <span class="glyphicon glyphicon-user"></span><span class="text">Add Customer</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="info.php?id=16">
+                            <span class="glyphicon glyphicon-registration-mark"></span><span class="text">Manage Customers</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
         <li>
             <a href="add.php?id=4">
                 <span class="isw-archive"></span><span class="text">Assign Stock</span>
@@ -116,12 +131,22 @@ foreach ($override->getData('assigned_stock') as $stock){
                 </li>
                 <li>
                     <a href="info.php?id=11">
-                        <span class="glyphicon glyphicon-file"></span><span class="text">Cash Report</span>
+                        <span class="glyphicon glyphicon-file"></span><span class="text">Cash Sales Report</span>
                     </a>
                 </li>
                 <li>
                     <a href="info.php?id=12">
-                        <span class="glyphicon glyphicon-open-file"></span><span class="text">Credit Report</span>
+                        <span class="glyphicon glyphicon-open-file"></span><span class="text">Credit Sales Report</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="info.php?id=17">
+                        <span class="glyphicon glyphicon-list"></span><span class="text">Payment Report</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="info.php?id=18">
+                        <span class="glyphicon glyphicon-list-alt"></span><span class="text">Pending Payment Report</span>
                     </a>
                 </li>
                 <li>
@@ -146,12 +171,37 @@ foreach ($override->getData('assigned_stock') as $stock){
                     <span class="isw-fullscreen"></span><span class="text">My Sales</span>
                 </a>
             </li>
+            <li>
+                <a href="add.php?id=7">
+                    <span class="isw-text_document"></span><span class="text">Sale Frame ( Normal Customer )</span>
+                </a>
+            </li>
+            <li>
+                <a href="add.php?id=9">
+                    <span class="isw-attachment"></span><span class="text">Sale Frame ( Regular Customer )</span>
+                </a>
+            </li>
+            <li>
+                <a href="add.php?id=11">
+                    <span class="isw-attachment"></span><span class="text">Add Payment</span>
+                </a>
+            </li>
         <?php }elseif ($user->data()->position == 2){?>
         <li>
             <a href="add.php?id=7">
-                <span class="isw-text_document"></span><span class="text">Sale Frame</span>
+                <span class="isw-text_document"></span><span class="text">Sale Frame (Normal Customer)</span>
             </a>
         </li>
+            <li>
+                <a href="add.php?id=9">
+                    <span class="isw-attachment"></span><span class="text">Sale Frame (Regular Customer)</span>
+                </a>
+            </li>
+            <li>
+                <a href="add.php?id=11">
+                    <span class="isw-attachment"></span><span class="text">Add Payment</span>
+                </a>
+            </li>
         <li>
             <a href="info.php?id=13">
                 <span class="isw-folder"></span><span class="text">My Sock</span>
@@ -162,6 +212,17 @@ foreach ($override->getData('assigned_stock') as $stock){
                 <span class="isw-fullscreen"></span><span class="text">My Sales</span>
             </a>
         </li>
+            <li>
+                <a href="info.php?id=17">
+                    <span class="isw-list"></span><span class="text">Payments</span>
+                </a>
+            </li>
+            <li>
+                <a href="info.php?id=18">
+                    <span class="isw-documents"></span><span class="text">Pending Payments</span>
+                </a>
+            </li>
+
         <?php }?>
     </ul>
 
