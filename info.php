@@ -1039,9 +1039,10 @@ if($user->isLoggedIn()) {
                                 }
                                 foreach ($payments as $payment){
                                     $sale=$override->get('frame_sale','id',$payment['sale_id'])[0];
-                                    $cus=$override->get('customer','id',$sale['customer_id'])[0]?>
+                                    $cus=$override->get('customer','id',$sale['customer_id'])[0];
+                                    if($sale['customer_id']){$cname=$override->get('customer','id',$sale['customer_id'])[0]['name'];}else{$cname=$cus['name'];}?>
                                     <tr>
-                                        <td><?=$cus['name']?></td>
+                                        <td><?=$cname?></td>
                                         <td><a href="#"><?=$sale['invoice']?></a></td>
                                         <td> <?=$sale['delivery_note']?></td>
                                         <td><?=number_format($payment['pay_amount'])?></td>

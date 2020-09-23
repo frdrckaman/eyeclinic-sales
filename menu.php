@@ -156,36 +156,36 @@ foreach ($override->getData('assigned_stock') as $stock){
                 </li>
             </ul>
         </li>
-            <li>
-                <a href="add.php?id=7">
-                    <span class="isw-text_document"></span><span class="text">Sale Frame</span>
-                </a>
-            </li>
-            <li>
-                <a href="info.php?id=13">
-                    <span class="isw-folder"></span><span class="text">My Sock</span>
-                </a>
-            </li>
-            <li>
-                <a href="info.php?id=15">
-                    <span class="isw-fullscreen"></span><span class="text">My Sales</span>
-                </a>
-            </li>
-            <li>
-                <a href="add.php?id=7">
-                    <span class="isw-text_document"></span><span class="text">Sale Frame ( Normal Customer )</span>
-                </a>
-            </li>
-            <li>
-                <a href="add.php?id=9">
-                    <span class="isw-attachment"></span><span class="text">Sale Frame ( Regular Customer )</span>
-                </a>
-            </li>
-            <li>
-                <a href="add.php?id=11">
-                    <span class="isw-attachment"></span><span class="text">Add Payment</span>
-                </a>
-            </li>
+<!--            <li>-->
+<!--                <a href="add.php?id=7">-->
+<!--                    <span class="isw-text_document"></span><span class="text">Sale Frame</span>-->
+<!--                </a>-->
+<!--            </li>-->
+<!--            <li>-->
+<!--                <a href="info.php?id=13">-->
+<!--                    <span class="isw-folder"></span><span class="text">My Sock</span>-->
+<!--                </a>-->
+<!--            </li>-->
+<!--            <li>-->
+<!--                <a href="info.php?id=15">-->
+<!--                    <span class="isw-fullscreen"></span><span class="text">My Sales</span>-->
+<!--                </a>-->
+<!--            </li>-->
+<!--            <li>-->
+<!--                <a href="add.php?id=7">-->
+<!--                    <span class="isw-text_document"></span><span class="text">Sale Frame ( Normal Customer )</span>-->
+<!--                </a>-->
+<!--            </li>-->
+<!--            <li>-->
+<!--                <a href="add.php?id=9">-->
+<!--                    <span class="isw-attachment"></span><span class="text">Sale Frame ( Regular Customer )</span>-->
+<!--                </a>-->
+<!--            </li>-->
+<!--            <li>-->
+<!--                <a href="add.php?id=11">-->
+<!--                    <span class="isw-attachment"></span><span class="text">Add Payment</span>-->
+<!--                </a>-->
+<!--            </li>-->
         <?php }elseif ($user->data()->position == 2){?>
         <li>
             <a href="add.php?id=7">

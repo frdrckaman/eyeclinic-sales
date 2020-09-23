@@ -5,7 +5,7 @@ $override = new OverideData();
 $email = new Email();
 $random = new Random();
 if($_GET['cnt'] == 'pay'){
-    $payments=$override->getNews('payment','status',0,'user_id',$_GET['getUid']);
+    $payments=$override->getNews('payment','status',0,'customer_id',$_GET['getUid']);
     foreach ($payments as $payment){
         $sale=$override->get('frame_sale','id',$payment['sale_id'])[0];
         $batch=$override->get('batch','id',$sale['batch_id'])[0];

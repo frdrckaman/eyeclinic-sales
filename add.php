@@ -317,8 +317,9 @@ if($user->isLoggedIn()) {
 //                while($override->unique('frame_sale','invoice',$invoice) == true){
 //                    $invoice = $random->get_rand_numbers(6);
 //                }
+                print_r($price['cost']);
                 if(Input::get('quantity') <= $avl){
-                    if($price['cost'] < $exp || $price['cost'] > $exp){
+                    if(Input::get('cash') < $exp || Input::get('cash') > $exp){
                         $errorMessage='Payment amount is less or greater than Expected amount';
                     }else{
                         try {
@@ -426,47 +427,45 @@ if($user->isLoggedIn()) {
 //                    $invoice = $random->get_rand_numbers(6);
 //                }
                 if(Input::get('quantity') <= $avl){
-                    if($price['cost'] < $exp || $price['cost'] > $exp){
-                        $errorMessage='Payment amount is less or greater than Expected amount';
-                    }else{
-                        try {
-                            $user->createRecord('frame_sale', array(
-                                'client_name' => '',
-                                'client_phone' => Input::get('client_phone'),
-                                'batch_id' => Input::get('batch_id'),
-                                'brand_id' => Input::get('brand_id'),
-                                'quantity' => Input::get('quantity'),
-                                'pay_type' => Input::get('pay_type'),
-                                'sale_date' => date('Y-m-d'),
-                                'invoice' => Input::get('invoice_no'),
-                                'delivery_note' => Input::get('delivery_note'),
-                                'customer_id' => Input::get('customer'),
-                                'note' => Input::get('note'),
-                                'status' => 1,
-                                'user_id'=>$user->data()->id
-                            ));
+                    try {
+                        $user->createRecord('frame_sale', array(
+                            'client_name' => '',
+                            'client_phone' => Input::get('client_phone'),
+                            'batch_id' => Input::get('batch_id'),
+                            'brand_id' => Input::get('brand_id'),
+                            'quantity' => Input::get('quantity'),
+                            'pay_type' => Input::get('pay_type'),
+                            'sale_date' => date('Y-m-d'),
+                            'invoice' => Input::get('invoice_no'),
+                            'delivery_note' => Input::get('delivery_note'),
+                            'customer_id' => Input::get('customer'),
+                            'note' => Input::get('note'),
+                            'status' => 1,
+                            'user_id'=>$user->data()->id
+                        ));
 
-                            $lid=$override->lastRow('frame_sale','id')[0];
-                            if(Input::get('cash') == $exp){$status=1;}else{$status=0;}
-                            $user->createRecord('payment', array(
-                                'pay_amount' => Input::get('cash'),
-                                'required_amount' => $exp,
-                                'pay_date' => date('Y-m-d'),
-                                'status' => $status,
-                                'sale_id' => $lid['id'],
-                                'user_id'=>$user->data()->id
-                            ));
-                            $user->createRecord('payment_rec', array(
-                                'pay_amount' => Input::get('cash'),
-                                'pay_date' => date('Y-m-d'),
-                                'sale_id' => $lid['id'],
-                                'user_id'=>$user->data()->id
-                            ));
-                            $successMessage = 'Frame Successful Sold';
+                        $lid=$override->lastRow('frame_sale','id')[0];
+                        if(Input::get('cash') == $exp){$status=1;}else{$status=0;}
+                        $user->createRecord('payment', array(
+                            'pay_amount' => Input::get('cash'),
+                            'required_amount' => $exp,
+                            'pay_date' => date('Y-m-d'),
+                            'status' => $status,
+                            'customer_id' => Input::get('customer'),
+                            'sale_id' => $lid['id'],
+                            'user_id'=>$user->data()->id
+                        ));
+                        $user->createRecord('payment_rec', array(
+                            'pay_amount' => Input::get('cash'),
+                            'pay_date' => date('Y-m-d'),
+                            'sale_id' => $lid['id'],
+                            'customer_id' => Input::get('customer'),
+                            'user_id'=>$user->data()->id
+                        ));
+                        $successMessage = 'Frame Successful Sold';
 
-                        } catch (Exception $e) {
-                            die($e->getMessage());
-                        }
+                    } catch (Exception $e) {
+                        die($e->getMessage());
                     }
                 }else{
                     $errorMessage='Insufficient Amount, it must be less or equal to stock batch amount';
@@ -753,7 +752,7 @@ if($user->isLoggedIn()) {
                                 <div class="row-form clearfix">
                                     <div class="col-md-3">Select Staff</div>
                                     <div class="col-md-9">
-                                        <select name="user_id" id="s2_1" style="width: 100%;" required>
+                                        <select name="user_id"  style="width: 100%;" required>
                                             <option value="">Select</option>
                                             <?php foreach ($override->getData('user') as $brand){?>
                                                 <option value="<?=$brand['id']?>"><?=$brand['firstname'].' '.$brand['lastname']?></option>
@@ -764,7 +763,7 @@ if($user->isLoggedIn()) {
                                 <div class="row-form clearfix">
                                     <div class="col-md-3">Select Batch</div>
                                     <div class="col-md-9">
-                                        <select name="batch_id" id="s2_3" style="width: 100%;" required>
+                                        <select name="batch_id"  style="width: 100%;" required>
                                             <option value="">Select</option>
                                             <?php foreach ($override->get('batch','status',1) as $batch){?>
                                                 <option value="<?=$batch['id']?>"><?=$batch['name']?></option>
@@ -775,7 +774,7 @@ if($user->isLoggedIn()) {
                                 <div class="row-form clearfix">
                                     <div class="col-md-3">Select Brand</div>
                                     <div class="col-md-9">
-                                        <select name="brand_id" id="s2_2" style="width: 100%;" required>
+                                        <select name="brand_id" id="s2_1" style="width: 100%;" required>
                                             <option value="">Select</option>
                                             <?php foreach ($override->getData('frame_brand') as $brand){?>
                                                 <option value="<?=$brand['id']?>"><?=$brand['name']?></option>
@@ -810,7 +809,7 @@ if($user->isLoggedIn()) {
                                 <div class="row-form clearfix">
                                     <div class="col-md-3">Select Batch</div>
                                     <div class="col-md-9">
-                                        <select name="batch_id" id="s2_1" style="width: 100%;" required>
+                                        <select name="batch_id" style="width: 100%;" required>
                                             <option value="">Select</option>
                                             <?php foreach ($override->get('batch','status',1) as $batch){?>
                                                 <option value="<?=$batch['id']?>"><?=$batch['name']?></option>
@@ -821,7 +820,7 @@ if($user->isLoggedIn()) {
                                 <div class="row-form clearfix">
                                     <div class="col-md-3">Select Brand</div>
                                     <div class="col-md-9">
-                                        <select name="brand_id" id="s2_2" style="width: 100%;" required>
+                                        <select name="brand_id" id="s2_1" style="width: 100%;" required>
                                             <option value="">Select</option>
                                             <?php foreach ($override->getData('frame_brand') as $brand){?>
                                                 <option value="<?=$brand['id']?>"><?=$brand['name']?></option>
@@ -902,7 +901,7 @@ if($user->isLoggedIn()) {
                                 <div class="row-form clearfix">
                                     <div class="col-md-3">Select Batch</div>
                                     <div class="col-md-9">
-                                        <select name="batch_id" id="s2_1" style="width: 100%;" required>
+                                        <select name="batch_id" style="width: 100%;" required>
                                             <option value="">Select</option>
                                             <?php foreach ($override->get('batch','status',1) as $batch){?>
                                                 <option value="<?=$batch['id']?>"><?=$batch['name']?></option>
@@ -936,7 +935,7 @@ if($user->isLoggedIn()) {
                                 <div class="row-form clearfix">
                                     <div class="col-md-3">Payment Type</div>
                                     <div class="col-md-9">
-                                        <select name="pay_type" id="s2_2" style="width: 100%;" required>
+                                        <select name="pay_type"  style="width: 100%;" required>
                                             <option value="">Select Method</option>
                                             <option value="1">Cash</option>
                                         </select>
@@ -1026,7 +1025,7 @@ if($user->isLoggedIn()) {
                                 <div class="row-form clearfix">
                                     <div class="col-md-3">Select Batch</div>
                                     <div class="col-md-9">
-                                        <select name="batch_id" id="s2_" style="width: 100%;" required>
+                                        <select name="batch_id" style="width: 100%;" required>
                                             <option value="">Select</option>
                                             <?php foreach ($override->get('batch','status',1) as $batch){?>
                                                 <option value="<?=$batch['id']?>"><?=$batch['name']?></option>
@@ -1037,7 +1036,7 @@ if($user->isLoggedIn()) {
                                 <div class="row-form clearfix">
                                     <div class="col-md-3">Select Brand</div>
                                     <div class="col-md-9">
-                                        <select name="brand_id" id="s2_2" style="width: 100%;" required>
+                                        <select name="brand_id" id="s2_1" style="width: 100%;" required>
                                             <option value="">Select</option>
                                             <?php foreach ($override->getData('frame_brand') as $brand){?>
                                                 <option value="<?=$brand['id']?>"><?=$brand['name']?></option>
@@ -1048,7 +1047,7 @@ if($user->isLoggedIn()) {
                                 <div class="row-form clearfix">
                                     <div class="col-md-3">Select Customer</div>
                                     <div class="col-md-9">
-                                        <select name="customer" id="s2_1" style="width: 100%;" required>
+                                        <select name="customer"  style="width: 100%;" required>
                                             <option value="">Select Customer</option>
                                             <?php foreach ($override->getData('customer') as $customer){?>
                                                 <option value="<?=$customer['id']?>"><?=$customer['name']?></option>
@@ -1066,7 +1065,7 @@ if($user->isLoggedIn()) {
                                 <div class="row-form clearfix">
                                     <div class="col-md-3">Payment Type</div>
                                     <div class="col-md-9">
-                                        <select name="pay_type" id="s2_2" style="width: 100%;" required>
+                                        <select name="pay_type"  style="width: 100%;" required>
                                             <option value="">Select Method</option>
                                             <option value="1">Cash</option>
                                             <option value="2">Credit</option>
@@ -1094,7 +1093,7 @@ if($user->isLoggedIn()) {
                                 <div class="row-form clearfix">
                                     <div class="col-md-3">Cash Amount:</div>
                                     <div class="col-md-9">
-                                        <input value="" class="validate[required]" type="number" name="cash" id="cash"/>
+                                        <input value="0" class="validate[required]" type="number" name="cash" id="cash"/>
                                     </div>
                                 </div>
                                 <div class="row-form clearfix">
@@ -1170,17 +1169,18 @@ if($user->isLoggedIn()) {
                                     <div class="col-md-9">
                                         <select name="customer" id="s2_1" style="width: 100%;" required>
                                             <option value="">Select Customer</option>
-                                            <?php foreach ($override->getNewsNoRepeat('payment','user_id','status',0,'user_id',$user->data()->id) as $customer){
-                                                $cname=$override->get('user','id',$customer['user_id'])[0];?>
-                                                <option value="<?=$cname['id']?>"><?=$cname['firstname'].' '.$cname['lastname']?></option>
+                                            <?php foreach ($override->getNewsNoRepeat('payment','customer_id','status',0,'user_id',$user->data()->id) as $customer){
+                                                $cname=$override->get('customer','id',$customer['customer_id'])[0];?>
+                                                <option value="<?=$cname['id']?>"><?=$cname['name']?></option>
                                             <?php }?>
                                         </select>
                                     </div>
                                 </div>
-                                <span><img src="img/loaders/loader.gif" id="wait" title="loader.gif"/></span>
+
                                 <div class="row-form clearfix">
                                     <div class="col-md-3">Select Payment Batch</div>
                                     <div class="col-md-9">
+                                        <span><img src="img/loaders/loader.gif" id="wait" title="loader.gif"/></span>
                                         <select name="payment_batch" id="s2_2" style="width: 100%;" required>
 
                                         </select>
