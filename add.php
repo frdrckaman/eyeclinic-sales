@@ -557,6 +557,45 @@ if($user->isLoggedIn()) {
                 $pageError = $validate->errors();
             }
         }
+        elseif (Input::get('frame_return')){
+            $validate = $validate->check($_POST, array(
+                'quantity' => array(
+                    'required' => true,
+                ),
+                'details' => array(
+                    'required' => true,
+                ),
+            ));
+            if ($validate->passed()) {
+
+                if(Input::get('qty') >= Input::get('quantity')){
+                    try {
+                        $qnty=Input::get('qty') - Input::get('quantity');
+                        $user->updateRecord('frame_sale', array(
+                            'quantity' => $qnty,
+                        ),Input::get('sid'));
+
+                        $user->createRecord('returned_frame', array(
+                            'quantity' => Input::get('quantity'),
+                            'details' => Input::get('details'),
+                            'return_date' => date('y-m-d'),
+                            'sale_id' => Input::get('sid'),
+                            'status' => 1,
+                            'user_id'=>$user->data()->id
+                        ));
+
+                        $successMessage = 'Frame Successful returned';
+
+                    } catch (Exception $e) {
+                        die($e->getMessage());
+                    }
+                }else{
+                    $errorMessage='Quantity returned must be less or equal to sold amount';
+                }
+            } else {
+                $pageError = $validate->errors();
+            }
+        }
     }
 }else{
     Redirect::to('index.php');
@@ -1201,6 +1240,52 @@ if($user->isLoggedIn()) {
                             </form>
                         </div>
 
+                    </div>
+                <?php }elseif ($_GET['id'] == 12 ){?>
+                    <div class="col-md-offset-1 col-md-8">
+                        <div class="head clearfix">
+                            <div class="isw-ok"></div>
+                            <h1>Returned Frame</h1>
+                        </div>
+                        <div class="block-fluid">
+                            <?php $data=$override->get('frame_sale','id',$_GET['sid'])[0];
+                            if($data['customer_id']){$cname=$override->get('customer','id',$data['customer_id'])[0]['name'];}else{$cname=$data['client_name'];}?>
+                            <form id="validation" method="post" >
+                                <div class="row-form clearfix">
+                                    <div class="col-md-3">Invoice No.:</div>
+                                    <div class="col-md-9">
+                                        <input value="<?=$data['invoice']?>"  type="text" name="invoice_no" id="invoice" disabled/>
+                                    </div>
+                                </div>
+                                <div class="row-form clearfix">
+                                    <div class="col-md-3">Delivery Note No.:</div>
+                                    <div class="col-md-9">
+                                        <input value="<?=$data['delivery_note']?>"  type="text" name="delivery_note" id="d_note" disabled/>
+                                    </div>
+                                </div>
+                                <div class="row-form clearfix">
+                                    <div class="col-md-3">Client Name:</div>
+                                    <div class="col-md-9">
+                                        <input value="<?=$cname?>"  type="text" name="client_name" id="client_name" disabled/>
+                                    </div>
+                                </div>
+                                <div class="row-form clearfix">
+                                    <div class="col-md-3">Quantity:</div>
+                                    <div class="col-md-9">
+                                        <input value="" class="validate[required]" type="text" name="quantity" id="quantity"/>
+                                    </div>
+                                </div>
+                                <div class="row-form clearfix">
+                                    <div class="col-md-3">Note:</div>
+                                    <div class="col-md-9"><textarea name="details" class="validate[required]" placeholder="Why frames are returned..."></textarea></div>
+                                </div>
+                                <div class="footer tar">
+                                    <input type="hidden" name="qty" value="<?=$data['quantity']?>">
+                                    <input type="hidden" name="sid" value="<?=$_GET['sid']?>">
+                                    <input type="submit" name="frame_return" value="Submit" class="btn btn-default">
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 <?php }?>
                 <div class="dr"><span></span></div>

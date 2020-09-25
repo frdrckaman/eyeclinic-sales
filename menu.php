@@ -92,16 +92,16 @@ foreach ($override->getData('assigned_stock') as $stock){
             </a>
         </li>
         <li class="openable">
-            <a href="#"><span class="isw-bookmark"></span><span class="text">Clinic Branch</span></a>
+            <a href="#"><span class="isw-bookmark"></span><span class="text">Branch</span></a>
             <ul>
                 <li>
                     <a href="add.php?id=2">
-                        <span class="glyphicon glyphicon-plus"></span><span class="text">Add Clinic Branch</span>
+                        <span class="glyphicon glyphicon-plus"></span><span class="text">Add Branch</span>
                     </a>
                 </li>
                 <li>
                     <a href="#">
-                        <span class="glyphicon glyphicon-floppy-disk"></span><span class="text">Manage Clinic Branch</span>
+                        <span class="glyphicon glyphicon-floppy-disk"></span><span class="text">Manage Branch</span>
                     </a>
                 </li>
             </ul>
@@ -137,6 +137,11 @@ foreach ($override->getData('assigned_stock') as $stock){
                 <li>
                     <a href="info.php?id=12">
                         <span class="glyphicon glyphicon-open-file"></span><span class="text">Credit Sales Report</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="info.php?id=19">
+                        <span class="glyphicon glyphicon-download-alt"></span><span class="text">Frame Returned Report</span>
                     </a>
                 </li>
                 <li>
@@ -189,12 +194,12 @@ foreach ($override->getData('assigned_stock') as $stock){
         <?php }elseif ($user->data()->position == 2){?>
         <li>
             <a href="add.php?id=7">
-                <span class="isw-text_document"></span><span class="text">Sale Frame (Normal Customer)</span>
+                <span class="isw-text_document"></span><span class="text">Sale Frame (Cash Customer)</span>
             </a>
         </li>
             <li>
                 <a href="add.php?id=9">
-                    <span class="isw-attachment"></span><span class="text">Sale Frame (Regular Customer)</span>
+                    <span class="isw-attachment"></span><span class="text">Sale Frame (Credit Customer)</span>
                 </a>
             </li>
             <li>

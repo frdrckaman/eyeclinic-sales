@@ -355,15 +355,17 @@ if($user->isLoggedIn()) {
                                     <th width="10%">Batch</th>
                                     <th width="10%">Brand</th>
                                     <th width="10%">Quantity</th>
+                                    <th width="10%">Cost</th>
                                     <th width="10%">Sales Date</th>
-                                    <th width="20"> Note</th>
-                                    <th width="15%">Staff</th>
+                                    <th width="15"> Note</th>
+                                    <th width="10%">Staff</th>
                                 </tr>
                                 </thead>
                                 <tbody>
                                 <?php foreach ($override->getData('frame_sale') as $sale){
                                     $brand=$override->get('frame_brand','id',$sale['brand_id']);
                                     $batch=$override->get('batch','id',$sale['batch_id']);
+                                    $price=$override->getNews('stock_batch','batch_id',$sale['batch_id'],'brand_id',$sale['batch_id'])[0];
                                     $staff=$override->get('user','id',$sale['user_id'])?>
                                     <tr>
                                         <td><?=$sale['client_name']?></td>
@@ -371,6 +373,7 @@ if($user->isLoggedIn()) {
                                         <td><?=$batch[0]['name'].' ('.$batch[0]['batch_id'].')'?></td>
                                         <td><?=$brand[0]['name']?></td>
                                         <td><?=$sale['quantity']?></td>
+                                        <td><?=number_format($price['cost']*$sale['quantity'])?></td>
                                         <td><?=$sale['sale_date']?></td>
                                         <td><?=$sale['note']?></td>
                                         <td><a href="info.php?id=6&sid=<?=$sale['user_id']?>"><?=$staff[0]['firstname'].' '.$staff[0]['lastname']?></a> </td>
@@ -608,27 +611,44 @@ if($user->isLoggedIn()) {
                                     <th width="10%">Batch</th>
                                     <th width="10%">Brand</th>
                                     <th width="10%">Quantity</th>
+                                    <th width="10%">Cost</th>
                                     <th width="10%">Sales Date</th>
-                                    <th width="20"> Note</th>
-                                    <th width="15%">Staff</th>
+                                    <th width="15"> Note</th>
+                                    <th width="10%">Staff</th>
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <?php foreach ($override->range('frame_sale','sale_date',$_GET['s'],'sale_date',$_GET['e']) as $sale){
+                                <?php $tts=0;$tq=0;foreach ($override->range('frame_sale','sale_date',$_GET['s'],'sale_date',$_GET['e']) as $sale){
                                     $brand=$override->get('frame_brand','id',$sale['brand_id']);
                                     $batch=$override->get('batch','id',$sale['batch_id']);
-                                    $staff=$override->get('user','id',$sale['user_id'])?>
+                                    $price=$override->getNews('stock_batch','batch_id',$sale['batch_id'],'brand_id',$sale['batch_id'])[0];
+                                    $staff=$override->get('user','id',$sale['user_id']);
+                                    $sl=$price['cost']*$sale['quantity'];
+                                    $tts+=$sl;$tq+=$sale['quantity'];
+                                    ?>
                                     <tr>
                                         <td><?=$sale['client_name']?></td>
                                         <td> <?=$sale['invoice']?></td>
                                         <td><?=$batch[0]['name'].' ('.$batch[0]['batch_id'].')'?></td>
                                         <td><?=$brand[0]['name']?></td>
                                         <td><?=$sale['quantity']?></td>
+                                        <td><?=number_format($sl)?></td>
                                         <td><?=$sale['sale_date']?></td>
                                         <td><?=$sale['note']?></td>
                                         <td><a href="info.php?id=6&sid=<?=$sale['user_id']?>"><?=$staff[0]['firstname'].' '.$staff[0]['lastname']?></a> </td>
                                     </tr>
                                 <?php }?>
+                                <tr>
+                                    <td><strong>Total</strong></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td><strong><?=number_format($tq)?></strong></td>
+                                    <td><strong><?=number_format($tts)?></strong></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -660,15 +680,17 @@ if($user->isLoggedIn()) {
                                     <th width="10%">Batch</th>
                                     <th width="10%">Brand</th>
                                     <th width="10%">Quantity</th>
+                                    <th width="10%">Cost</th>
                                     <th width="10%">Sales Date</th>
-                                    <th width="20"> Note</th>
-                                    <th width="15%">Staff</th>
+                                    <th width="15"> Note</th>
+                                    <th width="10%">Staff</th>
                                 </tr>
                                 </thead>
                                 <tbody>
                                 <?php foreach ($override->get('frame_sale','pay_type',1) as $sale){
                                     $brand=$override->get('frame_brand','id',$sale['brand_id']);
                                     $batch=$override->get('batch','id',$sale['batch_id']);
+                                    $price=$override->getNews('stock_batch','batch_id',$sale['batch_id'],'brand_id',$sale['batch_id'])[0];
                                     $staff=$override->get('user','id',$sale['user_id'])?>
                                     <tr>
                                         <td><?=$sale['client_name']?></td>
@@ -676,6 +698,7 @@ if($user->isLoggedIn()) {
                                         <td><?=$batch[0]['name'].' ('.$batch[0]['batch_id'].')'?></td>
                                         <td><?=$brand[0]['name']?></td>
                                         <td><?=$sale['quantity']?></td>
+                                        <td><?=number_format($price['cost']*$sale['quantity'])?></td>
                                         <td><?=$sale['sale_date']?></td>
                                         <td><?=$sale['note']?></td>
                                         <td><a href="info.php?id=6&sid=<?=$sale['user_id']?>"><?=$staff[0]['firstname'].' '.$staff[0]['lastname']?></a> </td>
@@ -712,15 +735,17 @@ if($user->isLoggedIn()) {
                                     <th width="10%">Batch</th>
                                     <th width="10%">Brand</th>
                                     <th width="10%">Quantity</th>
+                                    <th width="10%">Cost</th>
                                     <th width="10%">Sales Date</th>
-                                    <th width="20"> Note</th>
-                                    <th width="15%">Staff</th>
+                                    <th width="15"> Note</th>
+                                    <th width="10%">Staff</th>
                                 </tr>
                                 </thead>
                                 <tbody>
                                 <?php foreach ($override->get('frame_sale','pay_type',2) as $sale){
                                     $brand=$override->get('frame_brand','id',$sale['brand_id']);
                                     $batch=$override->get('batch','id',$sale['batch_id']);
+                                    $price=$override->getNews('stock_batch','batch_id',$sale['batch_id'],'brand_id',$sale['batch_id'])[0];
                                     $staff=$override->get('user','id',$sale['user_id'])?>
                                     <tr>
                                         <td><?=$sale['client_name']?></td>
@@ -728,6 +753,7 @@ if($user->isLoggedIn()) {
                                         <td><?=$batch[0]['name'].' ('.$batch[0]['batch_id'].')'?></td>
                                         <td><?=$brand[0]['name']?></td>
                                         <td><?=$sale['quantity']?></td>
+                                        <td><?=number_format($price['cost']*$sale['quantity'])?></td>
                                         <td><?=$sale['sale_date']?></td>
                                         <td><?=$sale['note']?></td>
                                         <td><a href="info.php?id=6&sid=<?=$sale['user_id']?>"><?=$staff[0]['firstname'].' '.$staff[0]['lastname']?></a> </td>
@@ -895,7 +921,7 @@ if($user->isLoggedIn()) {
                                         <td><?=$sale['quantity']?></td>
                                         <td><?=$sale['sale_date']?></td>
                                         <td><?=$sale['note']?></td>
-                                        <td><?=$user->data()->firstname.' '.$user->data()->lastname?></td>
+                                        <td><a href="add.php?id=12&sid=<?=$sale['id']?>">Returned</a> </td>
                                     </tr>
                                 <?php }?>
                                 </tbody>
@@ -1040,7 +1066,7 @@ if($user->isLoggedIn()) {
                                 foreach ($payments as $payment){
                                     $sale=$override->get('frame_sale','id',$payment['sale_id'])[0];
                                     $cus=$override->get('customer','id',$sale['customer_id'])[0];
-                                    if($sale['customer_id']){$cname=$override->get('customer','id',$sale['customer_id'])[0]['name'];}else{$cname=$cus['name'];}?>
+                                    if($sale['customer_id']){$cname=$override->get('customer','id',$sale['customer_id'])[0]['name'];}else{$cname=$sale['client_name'];}?>
                                     <tr>
                                         <td><?=$cname?></td>
                                         <td><a href="#"><?=$sale['invoice']?></a></td>
@@ -1056,7 +1082,60 @@ if($user->isLoggedIn()) {
                         </div>
                     </div>
                 <?php }elseif ($_GET['id'] == 19){?>
-
+                    <div class="col-md-12">
+                        <div class="head clearfix">
+                            <div class="isw-grid"></div>
+                            <h1>Return Frame Report</h1>
+                            <ul class="buttons">
+                                <li><a href="#" class="isw-download"></a></li>
+                                <li><a href="#" class="isw-attachment"></a></li>
+                                <li>
+                                    <a href="#" class="isw-settings"></a>
+                                    <ul class="dd-list">
+                                        <li><a href="#"><span class="isw-plus"></span> New document</a></li>
+                                        <li><a href="#"><span class="isw-edit"></span> Edit</a></li>
+                                        <li><a href="#"><span class="isw-delete"></span> Delete</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="block-fluid">
+                            <table cellpadding="0" cellspacing="0" width="100%" class="table">
+                                <thead>
+                                <tr>
+                                    <th width="15%">Customer Name</th>
+                                    <th width="10%">Invoice No</th>
+                                    <th width="10%">Delivery Note</th>
+                                    <th width="10%">Batch</th>
+                                    <th width="10%">Brand</th>
+                                    <th width="15%">Quantity</th>
+                                    <th width="10%">Date</th>
+                                    <th width="20%">Reasons</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <?php
+                                foreach ($override->getData('returned_frame') as $return){
+                                    $sale=$override->get('frame_sale','id',$return['sale_id'])[0];
+                                    $cus=$override->get('customer','id',$sale['customer_id'])[0];
+                                    $batch=$override->get('batch','id',$sale['batch_id'])[0];
+                                    $brand=$override->get('frame_brand','id',$sale['brand_id'])[0];
+                                    if($sale['customer_id']){$cname=$override->get('customer','id',$sale['customer_id'])[0]['name'];}else{$cname=$sale['client_name'];}?>
+                                    <tr>
+                                        <td><?=$cname?></td>
+                                        <td><a href="#"><?=$sale['invoice']?></a></td>
+                                        <td> <?=$sale['delivery_note']?></td>
+                                        <td><?=$batch['name'].'( '.$batch['batch_id'].' ) '?></td>
+                                        <td><?=$brand['name']?></td>
+                                        <td><?=$return['quantity']?></td>
+                                        <td><?=$return['return_date']?></td>
+                                        <td><?=$return['details']?></td>
+                                    </tr>
+                                <?php }?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 <?php }?>
             </div>
 
