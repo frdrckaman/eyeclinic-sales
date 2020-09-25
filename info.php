@@ -898,27 +898,32 @@ if($user->isLoggedIn()) {
                             <table cellpadding="0" cellspacing="0" width="100%" class="table">
                                 <thead>
                                 <tr>
-                                    <th width="15%">Customer Name</th>
+                                    <th width="10%">Customer Name</th>
                                     <th width="10%">Invoice</th>
                                     <th width="10%">Batch</th>
                                     <th width="10%">Brand</th>
                                     <th width="10%">Quantity</th>
+                                    <th width="10%">Cost</th>
                                     <th width="10%">Issued Date</th>
                                     <th width="20"> Note</th>
-                                    <th width="15%">Staff</th>
+                                    <th width="10">Action</th>
+
                                 </tr>
                                 </thead>
                                 <tbody>
                                 <?php foreach ($override->get('frame_sale','user_id',$user->data()->id) as $sale){
                                     $brand=$override->get('frame_brand','id',$sale['brand_id']);
                                     $batch=$override->get('batch','id',$sale['batch_id']);
+                                    $cost=$override->getNews('stock_batch','batch_id',$sale['batch_id'],'brand_id',$sale['brand_id'])[0];
+                                    if($sale['customer_id']){$cname=$override->get('customer','id',$sale['customer_id'])[0]['name'];}else{$cname=$sale['client_name'];}
                                    ?>
                                     <tr>
-                                        <td><a href="#"><?=$sale['client_name']?></a></td>
+                                        <td><a href="#"><?=$cname?></a></td>
                                         <td> <?=$sale['invoice']?></td>
                                         <td><?=$batch[0]['name'].' ('.$batch[0]['batch_id'].')'?></td>
                                         <td><?=$brand[0]['name']?></td>
                                         <td><?=$sale['quantity']?></td>
+                                        <td><?=number_format($cost['cost']*$sale['quantity'])?></td>
                                         <td><?=$sale['sale_date']?></td>
                                         <td><?=$sale['note']?></td>
                                         <td><a href="add.php?id=12&sid=<?=$sale['id']?>">Returned</a> </td>
