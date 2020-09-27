@@ -250,6 +250,16 @@ class OverideData{
         $result = $query->fetchAll(PDO::FETCH_ASSOC);
         return $result;
     }
+    public function getSumV4($table,$variable,$field,$value,$field1,$value1,$field2,$value2,$field3,$value3){
+        $query = $this->_pdo->query("SELECT SUM($variable) FROM $table WHERE $field = '$value' AND $field1 = '$value1' AND $field2 = '$value2' AND $field3 = '$value3'");
+        $result = $query->fetchAll(PDO::FETCH_ASSOC);
+        return $result;
+    }
+    public function getSumV5($table,$variable,$field,$value,$field1,$value1,$field2,$value2,$field3,$value3,$field4,$value4){
+        $query = $this->_pdo->query("SELECT SUM($variable) FROM $table WHERE $field = '$value' AND $field1 = '$value1' AND $field2 = '$value2' AND $field3 = '$value3'AND $field4 = '$value4'");
+        $result = $query->fetchAll(PDO::FETCH_ASSOC);
+        return $result;
+    }
     public function getDataAsc($table,$orderBy){
         $query = $this->_pdo->query("SELECT * FROM $table ORDER BY $orderBy ASC ");
         $result = $query->fetchAll(PDO::FETCH_ASSOC);

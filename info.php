@@ -459,8 +459,9 @@ if($user->isLoggedIn()) {
                                 <tr>
                                     <th width="20%">Batch Name</th>
                                     <th width="15%">Batch ID</th>
-                                    <th width="15%">Quantity</th>
-                                    <th width="15%">Cost</th>
+                                    <th width="10%">Batch Type</th>
+                                    <th width="10%">Quantity</th>
+                                    <th width="10%">Cost</th>
                                     <th width="15%">Batch Date</th>
                                     <th width="15">Status</th>
                                     <th width="5">Details</th>
@@ -471,11 +472,16 @@ if($user->isLoggedIn()) {
                                     <tr>
                                         <td><a href="#"><?=$batch['name']?></a></td>
                                         <td> <?=$batch['batch_id']?></td>
+                                        <td> <?php if($batch['batch_type'] == 1){echo'Frame';}elseif($batch['batch_type'] == 2){echo'Lens';}?></td>
                                         <td><?=$batch['quantity']?></td>
                                         <td><?=number_format($batch['cost'])?></td>
                                         <td><?=$batch['create_date']?></td>
                                         <td><?php if($batch['status'] == 1){?><span class="label label-success">Active</span><?php }else{?><span class="label label-danger">Completed</span><?php }?></td>
-                                        <td><a href="info.php?id=8&bid=<?=$batch['id']?>">Details</a> </td>
+                                        <?php if($batch['batch_type'] == 1){?>
+                                            <td><a href="info.php?id=8&bid=<?=$batch['id']?>">Details</a> </td>
+                                        <?php }elseif($batch['batch_type'] == 2){?>
+                                            <td><a href="info.php?id=20&bid=<?=$batch['id']?>">Details</a> </td>
+                                        <?php }?>
                                     </tr>
                                 <?php }?>
                                 </tbody>
@@ -486,7 +492,7 @@ if($user->isLoggedIn()) {
                     <div class="col-md-12">
                         <div class="head clearfix">
                             <div class="isw-grid"></div>
-                            <h1>Batch Report</h1>
+                            <h1>Frame Batch Report</h1>
                             <ul class="buttons">
                                 <li><a href="#" class="isw-download"></a></li>
                                 <li><a href="#" class="isw-attachment"></a></li>
@@ -1135,6 +1141,58 @@ if($user->isLoggedIn()) {
                                         <td><?=$return['quantity']?></td>
                                         <td><?=$return['return_date']?></td>
                                         <td><?=$return['details']?></td>
+                                    </tr>
+                                <?php }?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                <?php }elseif ($_GET['id'] == 20){?>
+                    <div class="col-md-12">
+                        <div class="head clearfix">
+                            <div class="isw-grid"></div>
+                            <h1>Lens Batch Report</h1>
+                            <ul class="buttons">
+                                <li><a href="#" class="isw-download"></a></li>
+                                <li><a href="#" class="isw-attachment"></a></li>
+                                <li>
+                                    <a href="#" class="isw-settings"></a>
+                                    <ul class="dd-list">
+                                        <li><a href="#"><span class="isw-plus"></span> New document</a></li>
+                                        <li><a href="#"><span class="isw-edit"></span> Edit</a></li>
+                                        <li><a href="#"><span class="isw-delete"></span> Delete</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="block-fluid">
+                            <table cellpadding="0" cellspacing="0" width="100%" class="table">
+                                <thead>
+                                <tr>
+                                    <th width="20%">Batch Name</th>
+                                    <th width="10%">Batch ID</th>
+                                    <th width="10%">Lens Type</th>
+                                    <th width="10%">Lens Category</th>
+                                    <th width="10%">Lens Power</th>
+                                    <th width="10%">Quantity</th>
+                                    <th width="15%">Cost per Lens</th>
+                                    <th width="15%">Total Cost</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <?php foreach ($override->get('stock_batch_lens','batch_id',$_GET['bid']) as $batch){
+                                    $stockBatch=$override->get('batch','id',$batch['batch_id'])[0];
+                                    $lensType=$override->get('lens_type','id',$batch['lens_type'])[0];
+                                    ?>
+                                    <tr>
+                                        <td><a href="#"><?=$stockBatch['name']?></a></td>
+                                        <td> <?=$stockBatch['batch_id']?></td>
+                                        <td> <?=$lensType['name']?></td>
+                                        <td><?=$batch['lens_cat']?></td>
+                                        <td><?=$batch['lens_power']?></td>
+                                        <td><?=$batch['quantity']?></td>
+                                        <td><?=number_format($batch['cost'])?></td>
+                                        <td><?=number_format($batch['cost']*$batch['quantity'])?></td>
                                     </tr>
                                 <?php }?>
                                 </tbody>
