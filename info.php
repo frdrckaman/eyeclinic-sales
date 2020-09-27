@@ -87,7 +87,7 @@ if($user->isLoggedIn()) {
                     <div class="col-md-12">
                         <div class="head clearfix">
                             <div class="isw-grid"></div>
-                            <h1>Simple table</h1>
+                            <h1>Frame Batch Summary</h1>
                             <ul class="buttons">
                                 <li><a href="#" class="isw-download"></a></li>
                                 <li><a href="#" class="isw-attachment"></a></li>
@@ -127,18 +127,16 @@ if($user->isLoggedIn()) {
                                         <td><?php if($sold[0]['SUM(quantity)']){$sld=$sold[0]['SUM(quantity)'];echo $sold[0]['SUM(quantity)'];}else{echo 0;}?></td>
                                         <td><?=($aStock[0]['quantity']-$sld)?></td>
                                         <td><?=$aStock[0]['quantity']?></td>
-                                        <td><a href="info.php?id=3&uid=<?=$staff[0]['id']?>&bid=<?=$batch['batch_id']?>">Details</a> </td>
+                                        <td><a href="info.php?id=3&ty=f&uid=<?=$staff[0]['id']?>&bid=<?=$batch['batch_id']?>">Details</a> </td>
                                     </tr>
                                 <?php }?>
                                 </tbody>
                             </table>
                         </div>
-                    </div>
-                <?php }elseif ($_GET['id'] == 3 && $user->data()->position == 1){?>
-                    <div class="col-md-12">
+                        <br>
                         <div class="head clearfix">
                             <div class="isw-grid"></div>
-                            <h1>Simple table</h1>
+                            <h1>Lens Batch Summary</h1>
                             <ul class="buttons">
                                 <li><a href="#" class="isw-download"></a></li>
                                 <li><a href="#" class="isw-attachment"></a></li>
@@ -157,34 +155,86 @@ if($user->isLoggedIn()) {
                                 <thead>
                                 <tr>
                                     <th><input type="checkbox" name="checkall"/></th>
-                                    <th width="15%">Brand</th>
-                                    <th width="15%">Batch</th>
-                                    <th width="10%">No. Sold by Credit</th>
-                                    <th width="5%">No. Sold in Cash</th>
-                                    <th width="5%">No. Total Sold</th>
-                                    <th width="5%">Stock Remained</th>
-                                    <th width="5%">Total Stock Given</th>
-                                    <th width="10%">Cash Sales</th>
-                                    <th width="10%">Credit Sales</th>
-                                    <th width="10%">Total Sales Amount</th>
-                                    <th width="10%">Total Expect Amount</th>
+                                    <th width="25%">Name</th>
+                                    <th width="20%">Sold</th>
+                                    <th width="20%">Remained</th>
+                                    <th width="20%">Total</th>
+                                    <th width="15%">Details</th>
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <?php foreach ($override->getNews('assigned_stock','user_id',$_GET['uid'],'batch_id',$_GET['bid']) as $aStock){
-                                    $brand=$override->get('frame_brand','id',$aStock['brand_id']);
-                                    $batch=$override->get('batch','id',$aStock['batch_id']);
-                                    $sold = $override->getSumV('frame_sale','quantity','batch_id',$aStock['batch_id']);
-                                    $payCr=0;$payC=0;$price=0;$cCost=0;$crCost=0;$tSales=0;$tExpCost=0;$payC=0;
-                                    $sld = $override->getNews('frame_sale','batch_id',$_GET['bid'],'brand_id',$brand[0]['id']);
-                                    $payC=$override->getSumV3('frame_sale','quantity','batch_id',$aStock['batch_id'],'brand_id',$brand[0]['id'],'pay_type',1)[0]['SUM(quantity)'];
-                                    $payCr=$override->getSumV3('frame_sale','quantity','batch_id',$aStock['batch_id'],'brand_id',$brand[0]['id'],'pay_type',2)[0]['SUM(quantity)'];
-                                    $price=$override->getNews('stock_batch','batch_id',$_GET['bid'],'brand_id',$brand[0]['id']);
-                                    $cCost=$payC*$price[0]['cost'];
-                                    $crCost=$payCr*$price[0]['cost'];
-                                    $tSales=$crCost+$cCost;
-                                    $tExpCost=$aStock['quantity']*$price[0]['cost'];
+                                <?php $sld=0;$batches = $override->getNoRepeat('assigned_stock_lens','batch_id', 'user_id',$_GET['uid']);
+                                foreach ($batches as $batch){
+                                    $sold = $override->getSumV('lens_sale','quantity','batch_id',$batch['batch_id']);
+                                    $staff=$override->get('user','id',$_GET['uid']);
+                                    $batch_name = $override->get('batch','id',$batch['batch_id'])[0]['name'];
+                                    $aStock=$override->get('assigned_stock_lens','batch_id',$batch['batch_id']);
                                     ?>
+                                    <tr>
+                                        <td><input type="checkbox" name="checkbox"/></td>
+                                        <td><a href="#"> <?=$batch_name?></a></td>
+                                        <td><?php if($sold[0]['SUM(quantity)']){$sld=$sold[0]['SUM(quantity)'];echo $sold[0]['SUM(quantity)'];}else{echo 0;}?></td>
+                                        <td><?=($aStock[0]['quantity']-$sld)?></td>
+                                        <td><?=$aStock[0]['quantity']?></td>
+                                        <td><a href="info.php?id=3&ty=l&uid=<?=$staff[0]['id']?>&bid=<?=$batch['batch_id']?>">Details</a> </td>
+                                    </tr>
+                                <?php }?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                <?php }elseif ($_GET['id'] == 3 && $user->data()->position == 1){?>
+                    <div class="col-md-12">
+                        <?php if($_GET['ty'] == 'f'){?>
+                            <div class="head clearfix">
+                                <div class="isw-grid"></div>
+                                <h1>Frame Batch Details</h1>
+                                <ul class="buttons">
+                                    <li><a href="#" class="isw-download"></a></li>
+                                    <li><a href="#" class="isw-attachment"></a></li>
+                                    <li>
+                                        <a href="#" class="isw-settings"></a>
+                                        <ul class="dd-list">
+                                            <li><a href="#"><span class="isw-plus"></span> New document</a></li>
+                                            <li><a href="#"><span class="isw-edit"></span> Edit</a></li>
+                                            <li><a href="#"><span class="isw-delete"></span> Delete</a></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="block-fluid">
+                                <table cellpadding="0" cellspacing="0" width="100%" class="table">
+                                    <thead>
+                                    <tr>
+                                        <th><input type="checkbox" name="checkall"/></th>
+                                        <th width="15%">Brand</th>
+                                        <th width="15%">Batch</th>
+                                        <th width="10%">No. Sold by Credit</th>
+                                        <th width="5%">No. Sold in Cash</th>
+                                        <th width="5%">No. Total Sold</th>
+                                        <th width="5%">Stock Remained</th>
+                                        <th width="5%">Total Stock Given</th>
+                                        <th width="10%">Cash Sales</th>
+                                        <th width="10%">Credit Sales</th>
+                                        <th width="10%">Total Sales Amount</th>
+                                        <th width="10%">Total Expect Amount</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <?php foreach ($override->getNews('assigned_stock','user_id',$_GET['uid'],'batch_id',$_GET['bid']) as $aStock){
+                                        $brand=$override->get('frame_brand','id',$aStock['brand_id']);
+                                        $batch=$override->get('batch','id',$aStock['batch_id']);
+                                        $sold = $override->getSumV('frame_sale','quantity','batch_id',$aStock['batch_id']);
+                                        $payCr=0;$payC=0;$price=0;$cCost=0;$crCost=0;$tSales=0;$tExpCost=0;$payC=0;
+                                        $sld = $override->getNews('frame_sale','batch_id',$_GET['bid'],'brand_id',$brand[0]['id']);
+                                        $payC=$override->getSumV3('frame_sale','quantity','batch_id',$aStock['batch_id'],'brand_id',$brand[0]['id'],'pay_type',1)[0]['SUM(quantity)'];
+                                        $payCr=$override->getSumV3('frame_sale','quantity','batch_id',$aStock['batch_id'],'brand_id',$brand[0]['id'],'pay_type',2)[0]['SUM(quantity)'];
+                                        $price=$override->getNews('stock_batch','batch_id',$_GET['bid'],'brand_id',$brand[0]['id']);
+                                        $cCost=$payC*$price[0]['cost'];
+                                        $crCost=$payCr*$price[0]['cost'];
+                                        $tSales=$crCost+$cCost;
+                                        $tExpCost=$aStock['quantity']*$price[0]['cost'];
+                                        ?>
                                         <tr>
                                             <td><input type="checkbox" name="checkbox"/></td>
                                             <td><a href="#"> <?=$brand[0]['name']?></a></td>
@@ -200,9 +250,78 @@ if($user->isLoggedIn()) {
                                             <td><?=number_format($tExpCost)?></td>
                                         </tr>
                                     <?php }?>
-                                </tbody>
-                            </table>
-                        </div>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <?php }elseif ($_GET['ty'] == 'l'){?>
+                            <div class="head clearfix">
+                                <div class="isw-grid"></div>
+                                <h1>Lens Batch Details</h1>
+                                <ul class="buttons">
+                                    <li><a href="#" class="isw-download"></a></li>
+                                    <li><a href="#" class="isw-attachment"></a></li>
+                                    <li>
+                                        <a href="#" class="isw-settings"></a>
+                                        <ul class="dd-list">
+                                            <li><a href="#"><span class="isw-plus"></span> New document</a></li>
+                                            <li><a href="#"><span class="isw-edit"></span> Edit</a></li>
+                                            <li><a href="#"><span class="isw-delete"></span> Delete</a></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="block-fluid">
+                                <table cellpadding="0" cellspacing="0" width="100%" class="table">
+                                    <thead>
+                                    <tr>
+                                        <th><input type="checkbox" name="checkall"/></th>
+                                        <th width="15%">Lens Type</th>
+                                        <th width="15%">Batch</th>
+                                        <th width="10%">No. Sold by Credit</th>
+                                        <th width="5%">No. Sold in Cash</th>
+                                        <th width="5%">No. Total Sold</th>
+                                        <th width="5%">Stock Remained</th>
+                                        <th width="5%">Total Stock Given</th>
+                                        <th width="10%">Cash Sales</th>
+                                        <th width="10%">Credit Sales</th>
+                                        <th width="10%">Total Sales Amount</th>
+                                        <th width="10%">Total Expect Amount</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <?php foreach ($override->getNews('assigned_stock_lens','user_id',$_GET['uid'],'batch_id',$_GET['bid']) as $aStock){
+                                        $brand=$override->get('lens_type','id',$aStock['lens_type'])[0];
+                                        $batch=$override->get('batch','id',$aStock['batch_id']);
+                                        $sold = $override->getSumV('lens_sale','quantity','batch_id',$aStock['batch_id']);
+                                        $payCr=0;$payC=0;$price=0;$cCost=0;$crCost=0;$tSales=0;$tExpCost=0;$payC=0;
+                                        $sld = $override->selectData4('lens_sale','batch_id',$_GET['bid'],'lens_type',$brand['id'],'lens_cat',$aStock['lens_cat'],'lens_power',$aStock['lens_power']);
+                                        $payC=$override->getSumV4('lens_sale','quantity','batch_id',$aStock['batch_id'],'lens_type',$brand['id'],'lens_cat',$aStock['lens_cat'],'lens_power',$aStock['lens_power'])[0]['SUM(quantity)'];
+                                        $payCr=$override->getSumV4('lens_sale','quantity','batch_id',$aStock['batch_id'],'lens_type',$brand['id'],'lens_cat',$aStock['lens_cat'],'lens_power',$aStock['lens_power'])[0]['SUM(quantity)'];
+                                        $price=$override->selectData4('lens_sale','batch_id',$_GET['bid'],'lens_type',$brand['id'],'lens_cat',$aStock['lens_cat'],'lens_power',$aStock['lens_power']);
+                                        $cCost=$payC*$price[0]['cost'];
+                                        $crCost=$payCr*$price[0]['cost'];
+                                        $tSales=$crCost+$cCost;
+                                        $tExpCost=$aStock['quantity']*$price[0]['cost'];
+                                        ?>
+                                        <tr>
+                                            <td><input type="checkbox" name="checkbox"/></td>
+                                            <td><a href="#"> <?=$brand['name']?></a></td>
+                                            <td><?=$batch[0]['name']?></td>
+                                            <td><?=$payCr?></td>
+                                            <td><?=$payC?></td>
+                                            <td><?=$sold[0]['SUM(quantity)']?></td>
+                                            <td><?=$aStock['quantity']-$sold[0]['SUM(quantity)']?></td>
+                                            <td><?=$aStock['quantity']?></td>
+                                            <td><?=number_format($cCost)?></td>
+                                            <td><?=number_format($crCost)?></td>
+                                            <td><?=number_format($tSales)?></td>
+                                            <td><?=number_format($tExpCost)?></td>
+                                        </tr>
+                                    <?php }?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <?php }?>
                     </div>
                 <?php }elseif($_GET['id'] == 4 && $user->data()->position == 1){?>
                     <div class="col-md-12">
@@ -332,7 +451,7 @@ if($user->isLoggedIn()) {
                     <div class="col-md-12">
                         <div class="head clearfix">
                             <div class="isw-grid"></div>
-                            <h1>Simple table</h1>
+                            <h1>Frame Sale Report</h1>
                             <ul class="buttons">
                                 <li><a href="#" class="isw-download"></a></li>
                                 <li><a href="#" class="isw-attachment"></a></li>
@@ -350,14 +469,15 @@ if($user->isLoggedIn()) {
                             <table cellpadding="0" cellspacing="0" width="100%" class="table">
                                 <thead>
                                 <tr>
-                                    <th width="15%">Customer Name</th>
+                                    <th width="10%">Customer Name</th>
                                     <th width="10%">Invoice</th>
                                     <th width="10%">Batch</th>
                                     <th width="10%">Brand</th>
+                                    <th width="10%">Sale Type</th>
                                     <th width="10%">Quantity</th>
                                     <th width="10%">Cost</th>
                                     <th width="10%">Sales Date</th>
-                                    <th width="15"> Note</th>
+                                    <th width="10"> Note</th>
                                     <th width="10%">Staff</th>
                                 </tr>
                                 </thead>
@@ -365,13 +485,71 @@ if($user->isLoggedIn()) {
                                 <?php foreach ($override->getData('frame_sale') as $sale){
                                     $brand=$override->get('frame_brand','id',$sale['brand_id']);
                                     $batch=$override->get('batch','id',$sale['batch_id']);
-                                    $price=$override->getNews('stock_batch','batch_id',$sale['batch_id'],'brand_id',$sale['batch_id'])[0];
+                                    $price=$override->getNews('stock_batch','batch_id',$sale['batch_id'],'brand_id',$sale['brand_id'])[0];
+                                    $customer=$override->get('customer','id',$sale['customer_id'])[0];
                                     $staff=$override->get('user','id',$sale['user_id'])?>
                                     <tr>
-                                        <td><?=$sale['client_name']?></td>
+                                        <td><?php if($sale['client_name']){echo $sale['client_name'];}else{echo $customer['name'];}?></td>
                                         <td> <?=$sale['invoice']?></td>
                                         <td><?=$batch[0]['name'].' ('.$batch[0]['batch_id'].')'?></td>
                                         <td><?=$brand[0]['name']?></td>
+                                        <td><?php if($sale['pay_type'] == 1){echo 'Cash';}elseif ($sale['pay_type'] == 2){echo 'Credit';}?></td>
+                                        <td><?=$sale['quantity']?></td>
+                                        <td><?=number_format($price['cost']*$sale['quantity'])?></td>
+                                        <td><?=$sale['sale_date']?></td>
+                                        <td><?=$sale['note']?></td>
+                                        <td><a href="info.php?id=6&sid=<?=$sale['user_id']?>"><?=$staff[0]['firstname'].' '.$staff[0]['lastname']?></a> </td>
+                                    </tr>
+                                <?php }?>
+                                </tbody>
+                            </table>
+                        </div>
+                        <br>
+                        <div class="head clearfix">
+                            <div class="isw-grid"></div>
+                            <h1>Lens Sale Report</h1>
+                            <ul class="buttons">
+                                <li><a href="#" class="isw-download"></a></li>
+                                <li><a href="#" class="isw-attachment"></a></li>
+                                <li>
+                                    <a href="#" class="isw-settings"></a>
+                                    <ul class="dd-list">
+                                        <li><a href="#"><span class="isw-plus"></span> New document</a></li>
+                                        <li><a href="#"><span class="isw-edit"></span> Edit</a></li>
+                                        <li><a href="#"><span class="isw-delete"></span> Delete</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="block-fluid">
+                            <table cellpadding="0" cellspacing="0" width="100%" class="table">
+                                <thead>
+                                <tr>
+                                    <th width="10%">Customer Name</th>
+                                    <th width="10%">Invoice</th>
+                                    <th width="10%">Batch</th>
+                                    <th width="10%">Lens Type</th>
+                                    <th width="10%">Sale Type</th>
+                                    <th width="10%">Quantity</th>
+                                    <th width="10%">Cost</th>
+                                    <th width="10%">Sales Date</th>
+                                    <th width="10"> Note</th>
+                                    <th width="10%">Staff</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <?php foreach ($override->getData('lens_sale') as $sale){
+                                    $brand=$override->get('lens_type','id',$sale['lens_type'])[0];
+                                    $batch=$override->get('batch','id',$sale['batch_id']);
+                                    $price=$override->selectData4('stock_batch_lens','batch_id',$sale['batch_id'],'lens_type',$brand['id'],'lens_cat',$sale['lens_cat'],'lens_power',$sale['lens_power'])[0];
+                                    $customer=$override->get('customer','id',$sale['customer_id'])[0];
+                                    $staff=$override->get('user','id',$sale['user_id'])?>
+                                    <tr>
+                                        <td><?php if($sale['client_name']){echo $sale['client_name'];}else{echo $customer['name'];}?></td>
+                                        <td> <?=$sale['invoice']?></td>
+                                        <td><?=$batch[0]['name'].' ('.$batch[0]['batch_id'].')'?></td>
+                                        <td><?=$brand['name']?></td>
+                                        <td><?php if($sale['pay_type'] == 1){echo 'Cash';}elseif ($sale['pay_type'] == 2){echo 'Credit';}?></td>
                                         <td><?=$sale['quantity']?></td>
                                         <td><?=number_format($price['cost']*$sale['quantity'])?></td>
                                         <td><?=$sale['sale_date']?></td>
@@ -387,7 +565,7 @@ if($user->isLoggedIn()) {
                     <div class="col-md-12">
                         <div class="head clearfix">
                             <div class="isw-grid"></div>
-                            <h1>Customer Table</h1>
+                            <h1>Frame Sale Details</h1>
                             <ul class="buttons">
                                 <li><a href="#" class="isw-download"></a></li>
                                 <li><a href="#" class="isw-attachment"></a></li>
@@ -419,9 +597,61 @@ if($user->isLoggedIn()) {
                                 <?php foreach ($override->get('frame_sale','user_id',$_GET['sid']) as $sale){
                                     $brand=$override->get('frame_brand','id',$sale['brand_id']);
                                     $batch=$override->get('batch','id',$sale['batch_id']);
+                                    $customer=$override->get('customer','id',$sale['customer_id'])[0];
                                     $staff=$override->get('user','id',$sale['user_id'])?>
                                     <tr>
-                                        <td><a href="#"><?=$sale['client_name']?></a></td>
+                                        <td><?php if($sale['client_name']){echo $sale['client_name'];}else{echo $customer['name'];}?></td>
+                                        <td> <?=$sale['invoice']?></td>
+                                        <td><?=$batch[0]['name'].' ('.$batch[0]['batch_id'].')'?></td>
+                                        <td><?=$brand[0]['name']?></td>
+                                        <td><?=$sale['quantity']?></td>
+                                        <td><?=$sale['sale_date']?></td>
+                                        <td><?=$sale['note']?></td>
+                                        <td><?=$staff[0]['firstname'].' '.$staff[0]['lastname']?></td>
+                                    </tr>
+                                <?php }?>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="head clearfix">
+                            <div class="isw-grid"></div>
+                            <h1>Lens Sale Details</h1>
+                            <ul class="buttons">
+                                <li><a href="#" class="isw-download"></a></li>
+                                <li><a href="#" class="isw-attachment"></a></li>
+                                <li>
+                                    <a href="#" class="isw-settings"></a>
+                                    <ul class="dd-list">
+                                        <li><a href="#"><span class="isw-plus"></span> New document</a></li>
+                                        <li><a href="#"><span class="isw-edit"></span> Edit</a></li>
+                                        <li><a href="#"><span class="isw-delete"></span> Delete</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="block-fluid">
+                            <table cellpadding="0" cellspacing="0" width="100%" class="table">
+                                <thead>
+                                <tr>
+                                    <th width="15%">Customer Name</th>
+                                    <th width="10%">Invoice</th>
+                                    <th width="10%">Batch</th>
+                                    <th width="10%">Lens Type</th>
+                                    <th width="10%">Quantity</th>
+                                    <th width="10%">Issued Date</th>
+                                    <th width="20"> Note</th>
+                                    <th width="15%">Staff</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <?php foreach ($override->get('lens_sale','user_id',$_GET['sid']) as $sale){
+                                    $brand=$override->get('lens_type','id',$sale['lens_type']);
+                                    $batch=$override->get('batch','id',$sale['batch_id']);
+                                    $customer=$override->get('customer','id',$sale['customer_id'])[0];
+                                    $staff=$override->get('user','id',$sale['user_id'])?>
+                                    <tr>
+                                        <td><?php if($sale['client_name']){echo $sale['client_name'];}else{echo $customer['name'];}?></td>
                                         <td> <?=$sale['invoice']?></td>
                                         <td><?=$batch[0]['name'].' ('.$batch[0]['batch_id'].')'?></td>
                                         <td><?=$brand[0]['name']?></td>
@@ -663,7 +893,7 @@ if($user->isLoggedIn()) {
                     <div class="col-md-12">
                         <div class="head clearfix">
                             <div class="isw-grid"></div>
-                            <h1>Cash Report</h1>
+                            <h1>Frame Cash Report</h1>
                             <ul class="buttons">
                                 <li><a href="#" class="isw-download"></a></li>
                                 <li><a href="#" class="isw-attachment"></a></li>
@@ -713,12 +943,66 @@ if($user->isLoggedIn()) {
                                 </tbody>
                             </table>
                         </div>
+
+                        <div class="head clearfix">
+                            <div class="isw-grid"></div>
+                            <h1>Lens Cash Report</h1>
+                            <ul class="buttons">
+                                <li><a href="#" class="isw-download"></a></li>
+                                <li><a href="#" class="isw-attachment"></a></li>
+                                <li>
+                                    <a href="#" class="isw-settings"></a>
+                                    <ul class="dd-list">
+                                        <li><a href="#"><span class="isw-plus"></span> New document</a></li>
+                                        <li><a href="#"><span class="isw-edit"></span> Edit</a></li>
+                                        <li><a href="#"><span class="isw-delete"></span> Delete</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="block-fluid">
+                            <table cellpadding="0" cellspacing="0" width="100%" class="table">
+                                <thead>
+                                <tr>
+                                    <th width="15%">Customer Name</th>
+                                    <th width="10%">Invoice</th>
+                                    <th width="10%">Batch</th>
+                                    <th width="10%">Brand</th>
+                                    <th width="10%">Quantity</th>
+                                    <th width="10%">Cost</th>
+                                    <th width="10%">Sales Date</th>
+                                    <th width="15"> Note</th>
+                                    <th width="10%">Staff</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <?php foreach ($override->get('lens_sale','pay_type',1) as $sale){
+                                    $brand=$override->get('lens_type','id',$sale['lens_type']);
+                                    $batch=$override->get('batch','id',$sale['batch_id']);
+                                    $customer=$override->get('customer','id',$sale['customer_id'])[0];
+                                    $price=$override->selectData4('stock_batch_lens','batch_id',$sale['batch_id'],'lens_type',$brand['id'],'lens_cat',$sale['lens_cat'],'lens_power',$sale['lens_power'])[0];
+                                    $staff=$override->get('user','id',$sale['user_id'])?>
+                                    <tr>
+                                        <td><?php if($sale['client_name']){echo $sale['client_name'];}else{echo $customer['name'];}?></td>
+                                        <td> <?=$sale['invoice']?></td>
+                                        <td><?=$batch[0]['name'].' ('.$batch[0]['batch_id'].')'?></td>
+                                        <td><?=$brand[0]['name']?></td>
+                                        <td><?=$sale['quantity']?></td>
+                                        <td><?=number_format($price['cost']*$sale['quantity'])?></td>
+                                        <td><?=$sale['sale_date']?></td>
+                                        <td><?=$sale['note']?></td>
+                                        <td><a href="info.php?id=6&sid=<?=$sale['user_id']?>"><?=$staff[0]['firstname'].' '.$staff[0]['lastname']?></a> </td>
+                                    </tr>
+                                <?php }?>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 <?php }elseif ($_GET['id'] == 12 && $user->data()->position == 1){?>
                     <div class="col-md-12">
                         <div class="head clearfix">
                             <div class="isw-grid"></div>
-                            <h1>Credit Report</h1>
+                            <h1>Frame Credit Report</h1>
                             <ul class="buttons">
                                 <li><a href="#" class="isw-download"></a></li>
                                 <li><a href="#" class="isw-attachment"></a></li>
@@ -755,6 +1039,60 @@ if($user->isLoggedIn()) {
                                     $staff=$override->get('user','id',$sale['user_id'])?>
                                     <tr>
                                         <td><?=$sale['client_name']?></td>
+                                        <td> <?=$sale['invoice']?></td>
+                                        <td><?=$batch[0]['name'].' ('.$batch[0]['batch_id'].')'?></td>
+                                        <td><?=$brand[0]['name']?></td>
+                                        <td><?=$sale['quantity']?></td>
+                                        <td><?=number_format($price['cost']*$sale['quantity'])?></td>
+                                        <td><?=$sale['sale_date']?></td>
+                                        <td><?=$sale['note']?></td>
+                                        <td><a href="info.php?id=6&sid=<?=$sale['user_id']?>"><?=$staff[0]['firstname'].' '.$staff[0]['lastname']?></a> </td>
+                                    </tr>
+                                <?php }?>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="head clearfix">
+                            <div class="isw-grid"></div>
+                            <h1>Lens Credit Report</h1>
+                            <ul class="buttons">
+                                <li><a href="#" class="isw-download"></a></li>
+                                <li><a href="#" class="isw-attachment"></a></li>
+                                <li>
+                                    <a href="#" class="isw-settings"></a>
+                                    <ul class="dd-list">
+                                        <li><a href="#"><span class="isw-plus"></span> New document</a></li>
+                                        <li><a href="#"><span class="isw-edit"></span> Edit</a></li>
+                                        <li><a href="#"><span class="isw-delete"></span> Delete</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="block-fluid">
+                            <table cellpadding="0" cellspacing="0" width="100%" class="table">
+                                <thead>
+                                <tr>
+                                    <th width="15%">Customer Name</th>
+                                    <th width="10%">Invoice</th>
+                                    <th width="10%">Batch</th>
+                                    <th width="10%">Brand</th>
+                                    <th width="10%">Quantity</th>
+                                    <th width="10%">Cost</th>
+                                    <th width="10%">Sales Date</th>
+                                    <th width="15"> Note</th>
+                                    <th width="10%">Staff</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <?php foreach ($override->get('lens_sale','pay_type',2) as $sale){
+                                    $brand=$override->get('lens_type','id',$sale['lens_type']);
+                                    $batch=$override->get('batch','id',$sale['batch_id']);
+                                    $customer=$override->get('customer','id',$sale['customer_id'])[0];
+                                    $price=$override->selectData4('stock_batch_lens','batch_id',$sale['batch_id'],'lens_type',$brand['id'],'lens_cat',$sale['lens_cat'],'lens_power',$sale['lens_power'])[0];
+                                    $staff=$override->get('user','id',$sale['user_id'])?>
+                                    <tr>
+                                        <td><?php if($sale['client_name']){echo $sale['client_name'];}else{echo $customer['name'];}?></td>
                                         <td> <?=$sale['invoice']?></td>
                                         <td><?=$batch[0]['name'].' ('.$batch[0]['batch_id'].')'?></td>
                                         <td><?=$brand[0]['name']?></td>
@@ -987,60 +1325,111 @@ if($user->isLoggedIn()) {
                     </div>
                 <?php }elseif ($_GET['id'] == 17){?>
                     <div class="col-md-12">
-                        <div class="head clearfix">
-                            <div class="isw-grid"></div>
-                            <h1>Payment Report</h1>
-                            <ul class="buttons">
-                                <li><a href="#" class="isw-download"></a></li>
-                                <li><a href="#" class="isw-attachment"></a></li>
-                                <li>
-                                    <a href="#" class="isw-settings"></a>
-                                    <ul class="dd-list">
-                                        <li><a href="#"><span class="isw-plus"></span> New document</a></li>
-                                        <li><a href="#"><span class="isw-edit"></span> Edit</a></li>
-                                        <li><a href="#"><span class="isw-delete"></span> Delete</a></li>
-                                    </ul>
-                                </li>
-                            </ul>
-                        </div>
-                        <div class="block-fluid">
-                            <table cellpadding="0" cellspacing="0" width="100%" class="table">
-                                <thead>
-                                <tr>
-                                    <th width="20%">Invoice No</th>
-                                    <th width="20%">Delivery Note</th>
-                                    <th width="15%">Amount Paid</th>
-                                    <th width="15%">Required Amount</th>
-                                    <th width="15%">Date</th>
-                                    <th width="15%">Status</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <?php if($user->data()->position == 1){
-                                    $payments=$override->getData('payment');
-                                }elseif ($user->data()->position == 2){
-                                    $payments=$override->get('payment','user_id',$user->data()->id);
-                                }
-                                foreach ($payments as $payment){
-                                    $sale=$override->get('frame_sale','id',$payment['sale_id'])[0]; ?>
+                        <?php if($_GET['typ'] == 'fr'){?>
+                            <div class="head clearfix">
+                                <div class="isw-grid"></div>
+                                <h1>Frame Payment Report</h1>
+                                <ul class="buttons">
+                                    <li><a href="#" class="isw-download"></a></li>
+                                    <li><a href="#" class="isw-attachment"></a></li>
+                                    <li>
+                                        <a href="#" class="isw-settings"></a>
+                                        <ul class="dd-list">
+                                            <li><a href="#"><span class="isw-plus"></span> New document</a></li>
+                                            <li><a href="#"><span class="isw-edit"></span> Edit</a></li>
+                                            <li><a href="#"><span class="isw-delete"></span> Delete</a></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="block-fluid">
+                                <table cellpadding="0" cellspacing="0" width="100%" class="table">
+                                    <thead>
                                     <tr>
-                                        <td><a href="#"><?=$sale['invoice']?></a></td>
-                                        <td> <?=$sale['delivery_note']?></td>
-                                        <td><?=number_format($payment['pay_amount'])?></td>
-                                        <td><?=number_format($payment['required_amount'])?></td>
-                                        <td><?=$payment['pay_date']?></td>
-                                        <td><?php if($payment['pay_amount'] == $payment['required_amount']){?><span class="label label-success">Complete</span><?php }else{?><span class="label label-danger">Pending</span><?php }?></td>
+                                        <th width="20%">Invoice No</th>
+                                        <th width="20%">Delivery Note</th>
+                                        <th width="15%">Amount Paid</th>
+                                        <th width="15%">Required Amount</th>
+                                        <th width="15%">Date</th>
+                                        <th width="15%">Status</th>
                                     </tr>
-                                <?php }?>
-                                </tbody>
-                            </table>
-                        </div>
+                                    </thead>
+                                    <tbody>
+                                    <?php if($user->data()->position == 1){
+                                        $payments=$override->getData('payment');
+                                    }elseif ($user->data()->position == 2){
+                                        $payments=$override->get('payment','user_id',$user->data()->id);
+                                    }
+                                    foreach ($payments as $payment){
+                                        $sale=$override->get('frame_sale','id',$payment['sale_id'])[0]; ?>
+                                        <tr>
+                                            <td><a href="#"><?=$sale['invoice']?></a></td>
+                                            <td> <?=$sale['delivery_note']?></td>
+                                            <td><?=number_format($payment['pay_amount'])?></td>
+                                            <td><?=number_format($payment['required_amount'])?></td>
+                                            <td><?=$payment['pay_date']?></td>
+                                            <td><?php if($payment['pay_amount'] == $payment['required_amount']){?><span class="label label-success">Complete</span><?php }else{?><span class="label label-danger">Pending</span><?php }?></td>
+                                        </tr>
+                                    <?php }?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <?php }elseif ($_GET['typ'] == 'ln'){?>
+                            <div class="head clearfix">
+                                <div class="isw-grid"></div>
+                                <h1>Lens Payment Report</h1>
+                                <ul class="buttons">
+                                    <li><a href="#" class="isw-download"></a></li>
+                                    <li><a href="#" class="isw-attachment"></a></li>
+                                    <li>
+                                        <a href="#" class="isw-settings"></a>
+                                        <ul class="dd-list">
+                                            <li><a href="#"><span class="isw-plus"></span> New document</a></li>
+                                            <li><a href="#"><span class="isw-edit"></span> Edit</a></li>
+                                            <li><a href="#"><span class="isw-delete"></span> Delete</a></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="block-fluid">
+                                <table cellpadding="0" cellspacing="0" width="100%" class="table">
+                                    <thead>
+                                    <tr>
+                                        <th width="20%">Invoice No</th>
+                                        <th width="20%">Delivery Note</th>
+                                        <th width="15%">Amount Paid</th>
+                                        <th width="15%">Required Amount</th>
+                                        <th width="15%">Date</th>
+                                        <th width="15%">Status</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <?php if($user->data()->position == 1){
+                                        $payments=$override->getData('payment_lens');
+                                    }elseif ($user->data()->position == 2){
+                                        $payments=$override->get('payment_lens','user_id',$user->data()->id);
+                                    }
+                                    foreach ($payments as $payment){
+                                        $sale=$override->get('lens_sale','id',$payment['sale_id'])[0]; ?>
+                                        <tr>
+                                            <td><a href="#"><?=$sale['invoice']?></a></td>
+                                            <td> <?=$sale['delivery_note']?></td>
+                                            <td><?=number_format($payment['pay_amount'])?></td>
+                                            <td><?=number_format($payment['required_amount'])?></td>
+                                            <td><?=$payment['pay_date']?></td>
+                                            <td><?php if($payment['pay_amount'] == $payment['required_amount']){?><span class="label label-success">Complete</span><?php }else{?><span class="label label-danger">Pending</span><?php }?></td>
+                                        </tr>
+                                    <?php }?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <?php }?>
                     </div>
                 <?php }elseif ($_GET['id'] == 18){?>
                     <div class="col-md-12">
                         <div class="head clearfix">
                             <div class="isw-grid"></div>
-                            <h1>Credit Payment Report</h1>
+                            <h1>Frame Credit Payment Report</h1>
                             <ul class="buttons">
                                 <li><a href="#" class="isw-download"></a></li>
                                 <li><a href="#" class="isw-attachment"></a></li>
@@ -1061,8 +1450,9 @@ if($user->isLoggedIn()) {
                                     <th width="15%">Customer Name</th>
                                     <th width="15%">Invoice No</th>
                                     <th width="15%">Delivery Note</th>
-                                    <th width="15%">Amount Paid</th>
-                                    <th width="15%">Required Amount</th>
+                                    <th width="10%">Amount Paid</th>
+                                    <th width="10%">Amount Remaining</th>
+                                    <th width="10%">Required Amount</th>
                                     <th width="15%">Date</th>
                                     <th width="10%">Status</th>
                                 </tr>
@@ -1083,6 +1473,63 @@ if($user->isLoggedIn()) {
                                         <td><a href="#"><?=$sale['invoice']?></a></td>
                                         <td> <?=$sale['delivery_note']?></td>
                                         <td><?=number_format($payment['pay_amount'])?></td>
+                                        <td><?=number_format($payment['required_amount'] - $payment['pay_amount'])?></td>
+                                        <td><?=number_format($payment['required_amount'])?></td>
+                                        <td><?=$payment['pay_date']?></td>
+                                        <td><?php if($payment['pay_amount'] == $payment['required_amount']){?><span class="label label-success">Complete</span><?php }else{?><span class="label label-danger">Pending</span><?php }?></td>
+                                    </tr>
+                                <?php }?>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="head clearfix">
+                            <div class="isw-grid"></div>
+                            <h1>Lens Credit Payment Report</h1>
+                            <ul class="buttons">
+                                <li><a href="#" class="isw-download"></a></li>
+                                <li><a href="#" class="isw-attachment"></a></li>
+                                <li>
+                                    <a href="#" class="isw-settings"></a>
+                                    <ul class="dd-list">
+                                        <li><a href="#"><span class="isw-plus"></span> New document</a></li>
+                                        <li><a href="#"><span class="isw-edit"></span> Edit</a></li>
+                                        <li><a href="#"><span class="isw-delete"></span> Delete</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="block-fluid">
+                            <table cellpadding="0" cellspacing="0" width="100%" class="table">
+                                <thead>
+                                <tr>
+                                    <th width="15%">Customer Name</th>
+                                    <th width="15%">Invoice No</th>
+                                    <th width="15%">Delivery Note</th>
+                                    <th width="10%">Amount Paid</th>
+                                    <th width="10%">Amount Remaining</th>
+                                    <th width="10%">Required Amount</th>
+                                    <th width="15%">Date</th>
+                                    <th width="10%">Status</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <?php
+                                if($user->data()->position == 1){
+                                    $payments=$override->get('payment_lens','status',0);
+                                }elseif ($user->data()->position == 2){
+                                    $payments=$override->getNews('payment_lens','status',0,'user_id',$user->data()->id);
+                                }
+                                foreach ($payments as $payment){
+                                    $sale=$override->get('lens_sale','id',$payment['sale_id'])[0];
+                                    $cus=$override->get('customer','id',$sale['customer_id'])[0];
+                                    if($sale['customer_id']){$cname=$override->get('customer','id',$sale['customer_id'])[0]['name'];}else{$cname=$sale['client_name'];}?>
+                                    <tr>
+                                        <td><?=$cname?></td>
+                                        <td><a href="#"><?=$sale['invoice']?></a></td>
+                                        <td> <?=$sale['delivery_note']?></td>
+                                        <td><?=number_format($payment['pay_amount'])?></td>
+                                        <td><?=number_format($payment['required_amount'] - $payment['pay_amount'])?></td>
                                         <td><?=number_format($payment['required_amount'])?></td>
                                         <td><?=$payment['pay_date']?></td>
                                         <td><?php if($payment['pay_amount'] == $payment['required_amount']){?><span class="label label-success">Complete</span><?php }else{?><span class="label label-danger">Pending</span><?php }?></td>
@@ -1147,7 +1594,7 @@ if($user->isLoggedIn()) {
                             </table>
                         </div>
                     </div>
-                <?php }elseif ($_GET['id'] == 20){?>
+                <?php }elseif ($_GET['id'] == 20 && $user->data()->position == 1){?>
                     <div class="col-md-12">
                         <div class="head clearfix">
                             <div class="isw-grid"></div>
@@ -1199,6 +1646,14 @@ if($user->isLoggedIn()) {
                             </table>
                         </div>
                     </div>
+                <?php }elseif ($_GET['id'] == 21){?>
+
+                <?php }elseif ($_GET['id'] == 22){?>
+
+                <?php }elseif ($_GET['id'] == 23){?>
+
+                <?php }elseif ($_GET['id'] == 24){?>
+
                 <?php }?>
             </div>
 

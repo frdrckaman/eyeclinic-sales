@@ -316,30 +316,39 @@ if($user->isLoggedIn()) {
                 $batch=$override->selectData('batch','id',Input::get('batch_id'),'batch_type',1,'status',1);
                 $stocks_batch=$override->getSumV('stock_batch','quantity','batch_id',Input::get('batch_id'));
                 $nw_st = Input::get('quantity') + $stocks_batch[0]['SUM(quantity)'];
-                if($nw_st <= $batch[0]['quantity']){
-                    try {
-                        $user->createRecord('stock_batch', array(
-                            'batch_id' => Input::get('batch_id'),
-                            'brand_id' => Input::get('brand_id'),
-                            'quantity' => Input::get('quantity'),
-                            'cost' => Input::get('price'),
-                            'create_on' => date('Y-m-d'),
-                            'status' => 1,
-                            'user_id'=>$user->data()->id
-                        ));
-                        $user->createRecord('stock_batch_rec', array(
-                            'batch_id' => Input::get('batch_id'),
-                            'brand_id' => Input::get('brand_id'),
-                            'quantity' => Input::get('quantity'),
-                            'cost' => Input::get('price'),
-                            'create_on' => date('Y-m-d'),
-                            'status' => 1,
-                            'user_id'=>$user->data()->id
-                        ));
-                        $successMessage = 'Frame Stock Batch Successful Added';
 
-                    } catch (Exception $e) {
-                        die($e->getMessage());
+                $batchF=$override->selectData('stock_batch','batch_id',Input::get('batch_id'),'brand_id',Input::get('brand_id'),'status',1)[0];
+
+                if($nw_st <= $batch[0]['quantity']){
+                    if($batchF){
+                        $fs=$batchF['quantity'] + Input::get('quantity');
+                        $user->updateRecord('stock_batch',array('quantity'=>$fs),$batchF['id']);
+                        $successMessage = 'Frame Stock Batch Successful Added';
+                    }else{
+                        try {
+                            $user->createRecord('stock_batch', array(
+                                'batch_id' => Input::get('batch_id'),
+                                'brand_id' => Input::get('brand_id'),
+                                'quantity' => Input::get('quantity'),
+                                'cost' => Input::get('price'),
+                                'create_on' => date('Y-m-d'),
+                                'status' => 1,
+                                'user_id'=>$user->data()->id
+                            ));
+                            $user->createRecord('stock_batch_rec', array(
+                                'batch_id' => Input::get('batch_id'),
+                                'brand_id' => Input::get('brand_id'),
+                                'quantity' => Input::get('quantity'),
+                                'cost' => Input::get('price'),
+                                'create_on' => date('Y-m-d'),
+                                'status' => 1,
+                                'user_id'=>$user->data()->id
+                            ));
+                            $successMessage = 'Frame Stock Batch Successful Added';
+
+                        } catch (Exception $e) {
+                            die($e->getMessage());
+                        }
                     }
                 }else{
                     $errorMessage='Insufficient Amount, it must be less or equal to stock batch amount';
@@ -366,27 +375,37 @@ if($user->isLoggedIn()) {
                     'required' => true,
                 ),
             ));
-            if ($validate->passed()) {$nw_st=0;
+            if ($validate->passed()) {$nw_st=0;$nq=0;
                 $batch=$override->selectData('batch','id',Input::get('batch_id'),'batch_type',2,'status',1);
                 $stocks_batch=$override->getSumV('stock_batch_lens','quantity','batch_id',Input::get('batch_id'));
                 $nw_st = Input::get('quantity') + $stocks_batch[0]['SUM(quantity)'];
+
+                $batchC=$override->selectData5('stock_batch_lens','batch_id',Input::get('batch_id'),'lens_type',Input::get('lens_type'),'lens_power',Input::get('lens_power'),'lens_cat',Input::get('lens_category'),'status',1)[0];
+
                 if($nw_st <= $batch[0]['quantity']){
-                    try {
-                        $user->createRecord('stock_batch_lens', array(
-                            'batch_id' => Input::get('batch_id'),
-                            'lens_type' => Input::get('lens_type'),
-                            'lens_cat' => Input::get('lens_category'),
-                            'lens_power' => Input::get('lens_power'),
-                            'quantity' => Input::get('quantity'),
-                            'cost' => Input::get('price'),
-                            'create_on' => date('Y-m-d'),
-                            'status' => 1,
-                            'user_id'=>$user->data()->id
-                        ));
+                    if($batchC){
+                        $nq=$batchC['quantity'] + Input::get('quantity');
+                        $user->updateRecord('stock_batch_lens',array('quantity'=> $nq),$batchC['id']);
                         $successMessage = 'Lens Stock Batch Successful Added';
-                    } catch (Exception $e) {
-                        die($e->getMessage());
+                    }else{
+                        try {
+                            $user->createRecord('stock_batch_lens', array(
+                                'batch_id' => Input::get('batch_id'),
+                                'lens_type' => Input::get('lens_type'),
+                                'lens_cat' => Input::get('lens_category'),
+                                'lens_power' => Input::get('lens_power'),
+                                'quantity' => Input::get('quantity'),
+                                'cost' => Input::get('price'),
+                                'create_on' => date('Y-m-d'),
+                                'status' => 1,
+                                'user_id'=>$user->data()->id
+                            ));
+                            $successMessage = 'Lens Stock Batch Successful Added';
+                        } catch (Exception $e) {
+                            die($e->getMessage());
+                        }
                     }
+
                 }else{
                     $errorMessage='Insufficient Amount, it must be less or equal to stock batch amount';
                 }
@@ -454,16 +473,17 @@ if($user->isLoggedIn()) {
                                 'delivery_note' => Input::get('delivery_note'),
                                 'note' => Input::get('note'),
                                 'status' => 1,
+                                'customer_id' =>0,
                                 'user_id'=>$user->data()->id
                             ));
                             $lid=$override->lastRow('frame_sale','id')[0];
-
 
                             $user->createRecord('payment', array(
                                 'pay_amount' => Input::get('cash'),
                                 'required_amount' => $exp,
                                 'pay_date' => date('Y-m-d'),
                                 'status' => 1,
+                                'customer_id' =>0,
                                 'sale_id' => $lid['id'],
                                 'user_id'=>$user->data()->id
                             ));
@@ -471,6 +491,7 @@ if($user->isLoggedIn()) {
                                 'pay_amount' => Input::get('cash'),
                                 'pay_date' => date('Y-m-d'),
                                 'sale_id' => $lid['id'],
+                                'customer_id' =>0,
                                 'user_id'=>$user->data()->id
                             ));
                             $successMessage = 'Frame Successful Sold';
@@ -554,6 +575,7 @@ if($user->isLoggedIn()) {
                                 'invoice' => Input::get('invoice_no'),
                                 'delivery_note' => Input::get('delivery_note'),
                                 'note' => Input::get('note'),
+                                'customer_id' => 0,
                                 'status' => 1,
                                 'user_id'=>$user->data()->id
                             ));
@@ -565,6 +587,7 @@ if($user->isLoggedIn()) {
                                 'required_amount' => $exp,
                                 'pay_date' => date('Y-m-d'),
                                 'status' => 1,
+                                'customer_id' => 0,
                                 'sale_id' => $lid['id'],
                                 'user_id'=>$user->data()->id
                             ));
@@ -763,7 +786,8 @@ if($user->isLoggedIn()) {
                             'pay_amount' => Input::get('cash'),
                             'required_amount' => $exp,
                             'pay_date' => date('Y-m-d'),
-                            'status' => 1,
+                            'status' => 0,
+                            'customer_id' => Input::get('customer'),
                             'sale_id' => $lid['id'],
                             'user_id'=>$user->data()->id
                         ));
@@ -854,6 +878,7 @@ if($user->isLoggedIn()) {
                         'pay_amount' => Input::get('amount'),
                         'pay_date' => date('Y-m-d'),
                         'sale_id' => $pid['sale_id'],
+                        'customer_id' => Input::get('customer'),
                         'user_id'=>$user->data()->id
                     ));
                         $successMessage = 'Customer Payment Added Successful';
@@ -1201,7 +1226,7 @@ if($user->isLoggedIn()) {
                                     <div class="col-md-9">
                                         <select name="batch_id" style="width: 100%;" required>
                                             <option value="">Select</option>
-                                            <?php foreach ($override->get('batch','status',1) as $batch){?>
+                                            <?php foreach ($override->getNews('batch','batch_type',1,'status',1) as $batch){?>
                                                 <option value="<?=$batch['id']?>"><?=$batch['name']?></option>
                                             <?php }?>
                                         </select>
@@ -1212,7 +1237,7 @@ if($user->isLoggedIn()) {
                                     <div class="col-md-9">
                                         <select name="brand_id" id="s2_1" style="width: 100%;" required>
                                             <option value="">Select</option>
-                                            <?php foreach ($override->getNews('batch','batch_type',1,'status',1) as $brand){?>
+                                            <?php foreach ($override->getData('frame_brand') as $brand){?>
                                                 <option value="<?=$brand['id']?>"><?=$brand['name']?></option>
                                             <?php }?>
                                         </select>
@@ -1648,7 +1673,7 @@ if($user->isLoggedIn()) {
                             </form>
                         </div>
                     </div>
-                <?php }elseif ($_GET['id'] == 13){?>
+                <?php }elseif ($_GET['id'] == 13 && $user->data()->position == 1){?>
                     <div class="col-md-offset-1 col-md-8">
                         <div class="head clearfix">
                             <div class="isw-ok"></div>
@@ -1716,7 +1741,7 @@ if($user->isLoggedIn()) {
                         </div>
 
                     </div>
-                <?php }elseif ($_GET['id'] == 14){?>
+                <?php }elseif ($_GET['id'] == 14 && $user->data()->position == 1){?>
                     <div class="col-md-offset-1 col-md-8">
                         <div class="head clearfix">
                             <div class="isw-ok"></div>
@@ -2053,7 +2078,7 @@ if($user->isLoggedIn()) {
                                 </div>
 
                                 <div class="footer tar">
-                                    <input type="submit" name="pay_sale_lens_lens" value="Submit" class="btn btn-default">
+                                    <input type="submit" name="pay_sale_lens" value="Submit" class="btn btn-default">
                                 </div>
 
                             </form>

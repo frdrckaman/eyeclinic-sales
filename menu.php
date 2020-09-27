@@ -164,8 +164,13 @@ foreach ($override->getData('assigned_stock') as $stock){
                     </a>
                 </li>
                 <li>
-                    <a href="info.php?id=17">
-                        <span class="glyphicon glyphicon-list"></span><span class="text">Payment Report</span>
+                    <a href="info.php?id=17&typ=fr">
+                        <span class="glyphicon glyphicon-list"></span><span class="text">Frame Payment Report</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="info.php?id=17&typ=ln">
+                        <span class="glyphicon glyphicon-list"></span><span class="text">Lens Payment Report</span>
                     </a>
                 </li>
                 <li>
@@ -195,36 +200,36 @@ foreach ($override->getData('assigned_stock') as $stock){
 <!--                    <span class="isw-fullscreen"></span><span class="text">My Sales</span>-->
 <!--                </a>-->
 <!--            </li>-->
-            <li>
-                <a href="add.php?id=7">
-                    <span class="isw-text_document"></span><span class="text">Sale Frame ( Normal Customer )</span>
-                </a>
-            </li>
-            <li>
-                <a href="add.php?id=9">
-                    <span class="isw-attachment"></span><span class="text">Sale Frame ( Regular Customer )</span>
-                </a>
-            </li>
-            <li>
-                <a href="add.php?id=15">
-                    <span class="isw-attachment"></span><span class="text">Sale Lens ( Normal Customer )</span>
-                </a>
-            </li>
-            <li>
-                <a href="add.php?id=16">
-                    <span class="isw-attachment"></span><span class="text">Sale Lens ( Regular Customer )</span>
-                </a>
-            </li>
-            <li>
-                <a href="add.php?id=11">
-                    <span class="isw-attachment"></span><span class="text">Add Frame Payment</span>
-                </a>
-            </li>
-            <li>
-                <a href="add.php?id=17">
-                    <span class="isw-attachment"></span><span class="text">Add Lens Payment</span>
-                </a>
-            </li>
+<!--            <li>-->
+<!--                <a href="add.php?id=7">-->
+<!--                    <span class="isw-text_document"></span><span class="text">Sale Frame ( Normal Customer )</span>-->
+<!--                </a>-->
+<!--            </li>-->
+<!--            <li>-->
+<!--                <a href="add.php?id=9">-->
+<!--                    <span class="isw-attachment"></span><span class="text">Sale Frame ( Regular Customer )</span>-->
+<!--                </a>-->
+<!--            </li>-->
+<!--            <li>-->
+<!--                <a href="add.php?id=15">-->
+<!--                    <span class="isw-attachment"></span><span class="text">Sale Lens ( Cash Customer )</span>-->
+<!--                </a>-->
+<!--            </li>-->
+<!--            <li>-->
+<!--                <a href="add.php?id=16">-->
+<!--                    <span class="isw-attachment"></span><span class="text">Sale Lens ( Credit Customer )</span>-->
+<!--                </a>-->
+<!--            </li>-->
+<!--            <li>-->
+<!--                <a href="add.php?id=11">-->
+<!--                    <span class="isw-attachment"></span><span class="text">Add Frame Payment</span>-->
+<!--                </a>-->
+<!--            </li>-->
+<!--            <li>-->
+<!--                <a href="add.php?id=17">-->
+<!--                    <span class="isw-attachment"></span><span class="text">Add Lens Payment</span>-->
+<!--                </a>-->
+<!--            </li>-->
         <?php }elseif ($user->data()->position == 2){?>
         <li>
             <a href="add.php?id=7">
@@ -237,8 +242,23 @@ foreach ($override->getData('assigned_stock') as $stock){
                 </a>
             </li>
             <li>
+                <a href="add.php?id=15">
+                    <span class="isw-attachment"></span><span class="text">Sale Lens ( Cash Customer )</span>
+                </a>
+            </li>
+            <li>
+                <a href="add.php?id=16">
+                    <span class="isw-attachment"></span><span class="text">Sale Lens ( Credit Customer )</span>
+                </a>
+            </li>
+            <li>
                 <a href="add.php?id=11">
-                    <span class="isw-attachment"></span><span class="text">Add Payment</span>
+                    <span class="isw-attachment"></span><span class="text">Add Frame Payment</span>
+                </a>
+            </li>
+            <li>
+                <a href="add.php?id=17">
+                    <span class="isw-attachment"></span><span class="text">Add Lens Payment</span>
                 </a>
             </li>
         <li>
