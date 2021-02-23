@@ -258,6 +258,66 @@ if($user->isLoggedIn()) {
                 $pageError = $validate->errors();
             }
         }
+        elseif (Input::get('assign_stock_accessory')) {
+            $validate = $validate->check($_POST, array(
+                'batch_id' => array(
+                    'required' => true,
+                ),
+                'accessory_id' => array(
+                    'required' => true,
+                ),
+                'user_id' => array(
+                    'required' => true,
+                ),
+                'quantity' => array(
+                    'required' => true,
+                ),
+            ));
+            if ($validate->passed()) {$nw_st=0;
+                $batch=$override->selectData('stock_batch_accessories','batch_id',Input::get('batch_id'),'accessory_id',Input::get('accessory_id'),'status',1);
+                $stocks_batch=$override->getSumV3('assigned_stock_accessories','quantity','batch_id',Input::get('batch_id'),'accessory_id',Input::get('accessory_id'),'status',1);
+                $nw_st = Input::get('quantity') + $stocks_batch[0]['SUM(quantity)'];
+                if($nw_st <= $batch[0]['quantity']){
+                    try {
+                        $stocks = $override->selectData('assigned_stock_accessories','accessory_id', Input::get('accessory_id'),'batch_id',Input::get('batch_id'),'user_id', Input::get('user_id'));
+                        if($stocks){
+                            $qnt= $stocks[0]['quantity'] + Input::get('quantity');
+                            $user->updateRecord('assigned_stock_accessories',array('quantity'=>$qnt),$stocks[0]['id']);
+                            $successMessage = 'Stock Assigned Successful';
+                        }else{
+                            $user->createRecord('assigned_stock_accessories', array(
+                                'user_id' => Input::get('user_id'),
+                                'batch_id' => Input::get('batch_id'),
+                                'accessory_id' => Input::get('accessory_id'),
+                                'quantity' => Input::get('quantity'),
+                                'status' => 1,
+                                'admin_id'=>$user->data()->id
+                            ));
+                            $successMessage = 'Stock Assigned Successful';
+                        }
+                        $user->createRecord('assigned_stock_accessories_rec', array(
+                            'user_id' => Input::get('user_id'),
+                            'batch_id' => Input::get('batch_id'),
+                            'accessory_id' => Input::get('accessory_id'),
+                            'quantity' => Input::get('quantity'),
+                            'create_on' => date('Y-m-d'),
+                            'status' => 1,
+                            'admin_id'=>$user->data()->id
+                        ));
+//                        $pStock = $override->get('frame_stock','brand_id', Input::get('brand_id'));
+//                        $n_st = $pStock[0]['quantity'] - Input::get('quantity');
+//                        $user->updateRecord('frame_stock',array('quantity'=>$n_st),$pStock[0]['id']);
+                    } catch (Exception $e) {
+                        die($e->getMessage());
+                    }
+                }
+                else{
+                    $errorMessage='Insufficient Amount, it must be less or equal to stock batch amount';
+                }
+            } else {
+                $pageError = $validate->errors();
+            }
+        }
         elseif (Input::get('add_batch')){
             $validate = $validate->check($_POST, array(
                 'batch' => array(
@@ -350,6 +410,66 @@ if($user->isLoggedIn()) {
                             die($e->getMessage());
                         }
                     }
+                }else{
+                    $errorMessage='Insufficient Amount, it must be less or equal to stock batch amount';
+                }
+            } else {
+                $pageError = $validate->errors();
+            }
+        }
+        elseif (Input::get('add_batch_stock_accessories')){
+            $validate = $validate->check($_POST, array(
+                'accessory_id' => array(
+                    'required' => true,
+                ),
+                'batch_id' => array(
+                    'required' => true,
+                ),
+                'quantity' => array(
+                    'required' => true,
+                ),
+                'price' => array(
+                    'required' => true,
+                ),
+            ));
+            if ($validate->passed()) {$nw_st=0;$nq=0;
+                $batch=$override->selectData('batch','id',Input::get('batch_id'),'batch_type',3,'status',1);
+                $stocks_batch=$override->getSumV('stock_batch_accessories','quantity','batch_id',Input::get('batch_id'));
+                $nw_st = Input::get('quantity') + $stocks_batch[0]['SUM(quantity)'];
+
+                $batchC=$override->selectData('stock_batch_accessories','batch_id',Input::get('batch_id'),'accessory_id',Input::get('accessory_id'),'status',1)[0];
+
+                if($nw_st <= $batch[0]['quantity']){
+                    if($batchC){
+                        $nq=$batchC['quantity'] + Input::get('quantity');
+                        $user->updateRecord('stock_batch_accessories',array('quantity'=> $nq),$batchC['id']);
+                        $successMessage = 'Accessories Stock Batch Successful Added';
+                    }else{
+                        try {
+                            $user->createRecord('stock_batch_accessories', array(
+                                'batch_id' => Input::get('batch_id'),
+                                'accessory_id' => Input::get('accessory_id'),
+                                'quantity' => Input::get('quantity'),
+                                'cost' => Input::get('price'),
+                                'create_on' => date('Y-m-d'),
+                                'status' => 1,
+                                'user_id'=>$user->data()->id
+                            ));
+                            $successMessage = 'Accessories Stock Batch Successful Added';
+                        } catch (Exception $e) {
+                            die($e->getMessage());
+                        }
+                    }
+                    $user->createRecord('stock_batch_accessories_rec', array(
+                        'batch_id' => Input::get('batch_id'),
+                        'accessory_id' => Input::get('accessory_id'),
+                        'quantity' => Input::get('quantity'),
+                        'cost' => Input::get('price'),
+                        'create_on' => date('Y-m-d'),
+                        'status' => 1,
+                        'user_id'=>$user->data()->id
+                    ));
+
                 }else{
                     $errorMessage='Insufficient Amount, it must be less or equal to stock batch amount';
                 }
@@ -611,6 +731,101 @@ if($user->isLoggedIn()) {
                 $pageError = $validate->errors();
             }
         }
+        elseif (Input::get('accessory_sale')){
+            $validate = $validate->check($_POST, array(
+                'batch_id' => array(
+                    'required' => true,
+                ),
+                'accessory_id' => array(
+                    'required' => true,
+                ),
+                'client_name' => array(
+                    'required' => true,
+                ),
+                'client_phone' => array(
+                    'required' => true,
+                ),
+                'quantity' => array(
+                    'required' => true,
+                ),
+                'pay_type' => array(
+                    'required' => true,
+                ),
+                'cash' => array(
+                    'required' => true,
+                ),
+                'invoice_no' => array(
+                    'required' => true,
+                ),
+                'delivery_note' => array(
+                    'required' => true,
+                ),
+            ));
+            if ($validate->passed()) {$avl=0;$sld=0;
+                $assigned_stock=$override->selectData('assigned_stock_accessories','batch_id',Input::get('batch_id'),'accessory_id',Input::get('accessory_id'),'user_id',$user->data()->id);
+                $stocks_sold=$override->getSumV3('accessories_sale','quantity','batch_id',Input::get('batch_id'),'accessory_id',Input::get('accessory_id'),'user_id',$user->data()->id);
+                $avl=$assigned_stock[0]['quantity'] - $stocks_sold[0]['SUM(quantity)'];
+                $price=$override->getNews('stock_batch_accessories','batch_id',Input::get('batch_id'),'accessory_id',Input::get('accessory_id'))[0];
+                $exp=Input::get('quantity')*$price['cost'];
+//                $invoice = $random->get_rand_numbers(6);
+//                $user->updateRecord('frame_sale',array('invoice'=>$invoice),3);
+//                $checkInvNo = $override->get('frame_sale','invoice',$invoice);
+//                while($override->unique('frame_sale','invoice',$invoice) == true){
+//                    $invoice = $random->get_rand_numbers(6);
+//                }
+
+                if(Input::get('quantity') <= $avl){
+                    if(Input::get('cash') < $exp || Input::get('cash') > $exp){
+                        $errorMessage='Payment amount is less or greater than Expected amount';
+                    }else{
+                        try {
+                            $user->createRecord('accessories_sale', array(
+                                'client_name' => Input::get('client_name'),
+                                'client_phone' => Input::get('client_phone'),
+                                'batch_id' => Input::get('batch_id'),
+                                'accessory_id' => Input::get('accessory_id'),
+                                'quantity' => Input::get('quantity'),
+                                'pay_type' => Input::get('pay_type'),
+                                'sale_date' => date('Y-m-d'),
+                                'invoice' => Input::get('invoice_no'),
+                                'delivery_note' => Input::get('delivery_note'),
+                                'note' => Input::get('note'),
+                                'status' => 1,
+                                'customer_id' =>0,
+                                'user_id'=>$user->data()->id
+                            ));
+                            $lid=$override->lastRow('accessories_sale','id')[0];
+
+                            $user->createRecord('payment_accessories', array(
+                                'pay_amount' => Input::get('cash'),
+                                'required_amount' => $exp,
+                                'pay_date' => date('Y-m-d'),
+                                'status' => 1,
+                                'customer_id' =>0,
+                                'sale_id' => $lid['id'],
+                                'user_id'=>$user->data()->id
+                            ));
+                            $user->createRecord('payment_accessories_rec', array(
+                                'pay_amount' => Input::get('cash'),
+                                'pay_date' => date('Y-m-d'),
+                                'sale_id' => $lid['id'],
+                                'customer_id' =>0,
+                                'user_id'=>$user->data()->id
+                            ));
+                            $successMessage = 'Accessories Successful Sold';
+
+                        } catch (Exception $e) {
+                            die($e->getMessage());
+                        }
+                    }
+
+                }else{
+                    $errorMessage='Insufficient Amount, it must be less or equal to stock batch amount';
+                }
+            } else {
+                $pageError = $validate->errors();
+            }
+        }
         elseif (Input::get('search')){
             $validate = new validate();
             $validate = $validate->check($_POST, array(
@@ -809,6 +1024,93 @@ if($user->isLoggedIn()) {
                 $pageError = $validate->errors();
             }
         }
+        elseif (Input::get('accessory_sale_cus')){
+            $validate = $validate->check($_POST, array(
+                'batch_id' => array(
+                    'required' => true,
+                ),
+                'accessory_id' => array(
+                    'required' => true,
+                ),
+                'customer' => array(
+                    'required' => true,
+                ),
+                'client_phone' => array(
+                    'required' => true,
+                ),
+                'quantity' => array(
+                    'required' => true,
+                ),
+                'pay_type' => array(
+                    'required' => true,
+                ),
+                'invoice_no' => array(
+                    'required' => true,
+                ),
+                'delivery_note' => array(
+                    'required' => true,
+                ),
+            ));
+            if ($validate->passed()) {$avl=0;$sld=0;
+                $assigned_stock=$override->selectData('assigned_stock_accessories','batch_id',Input::get('batch_id'),'accessory_id',Input::get('accessory_id'),'user_id',$user->data()->id);
+                $stocks_sold=$override->getSumV3('accessories_sale','quantity','batch_id',Input::get('batch_id'),'accessory_id',Input::get('accessory_id'),'user_id',$user->data()->id);
+                $avl=$assigned_stock[0]['quantity'] - $stocks_sold[0]['SUM(quantity)'];
+                $price=$override->getNews('stock_batch_accessories','batch_id',Input::get('batch_id'),'accessory_id',Input::get('accessory_id'))[0];
+                $exp=Input::get('quantity')*$price['cost'];
+//                $invoice = $random->get_rand_numbers(6);
+//                $user->updateRecord('frame_sale',array('invoice'=>$invoice),3);
+//                $checkInvNo = $override->get('frame_sale','invoice',$invoice);
+//                while($override->unique('frame_sale','invoice',$invoice) == true){
+//                    $invoice = $random->get_rand_numbers(6);
+//                }
+                if(Input::get('quantity') <= $avl){
+                    try {
+                        $user->createRecord('accessories_sale', array(
+                            'client_name' => '',
+                            'client_phone' => Input::get('client_phone'),
+                            'batch_id' => Input::get('batch_id'),
+                            'accessory_id' => Input::get('accessory_id'),
+                            'quantity' => Input::get('quantity'),
+                            'pay_type' => Input::get('pay_type'),
+                            'sale_date' => date('Y-m-d'),
+                            'invoice' => Input::get('invoice_no'),
+                            'delivery_note' => Input::get('delivery_note'),
+                            'customer_id' => Input::get('customer'),
+                            'note' => Input::get('note'),
+                            'status' => 1,
+                            'user_id'=>$user->data()->id
+                        ));
+
+                        $lid=$override->lastRow('accessories_sale','id')[0];
+                        if(Input::get('cash') == $exp){$status=1;}else{$status=0;}
+                        $user->createRecord('payment_accessories', array(
+                            'pay_amount' => Input::get('cash'),
+                            'required_amount' => $exp,
+                            'pay_date' => date('Y-m-d'),
+                            'status' => $status,
+                            'customer_id' => Input::get('customer'),
+                            'sale_id' => $lid['id'],
+                            'user_id'=>$user->data()->id
+                        ));
+                        $user->createRecord('payment_accessories_rec', array(
+                            'pay_amount' => Input::get('cash'),
+                            'pay_date' => date('Y-m-d'),
+                            'sale_id' => $lid['id'],
+                            'customer_id' => Input::get('customer'),
+                            'user_id'=>$user->data()->id
+                        ));
+                        $successMessage = 'Accessories Successful Sold';
+
+                    } catch (Exception $e) {
+                        die($e->getMessage());
+                    }
+                }else{
+                    $errorMessage='Insufficient Amount, it must be less or equal to stock batch amount';
+                }
+            } else {
+                $pageError = $validate->errors();
+            }
+        }
         elseif (Input::get('add_customer')){
             $validate = new validate();
             $validate = $validate->check($_POST, array(
@@ -933,6 +1235,46 @@ if($user->isLoggedIn()) {
                 $pageError = $validate->errors();
             }
         }
+        elseif (Input::get('pay_sale_accessories')){
+            $validate = $validate->check($_POST, array(
+                'customer' => array(
+                    'required' => true,
+                ),
+                'payment_batch' => array(
+                    'required' => true,
+                ),
+                'amount' => array(
+                    'required' => true,
+                ),
+            ));
+            if ($validate->passed()) {
+                $pid=$override->get('payment_accessories','id',Input::get('payment_batch'))[0];
+                $py=$pid['pay_amount']+Input::get('amount');
+                if($py <= $pid['required_amount']){
+                    if($py==$pid['required_amount']){$status=1;}else{$status=0;}
+                    try {
+                        $user->updateRecord('payment_accessories', array(
+                            'pay_amount' => $py,
+                            'status' => $status,
+                        ),$pid['id']);
+                        $user->createRecord('payment_accessories_rec', array(
+                            'pay_amount' => Input::get('amount'),
+                            'pay_date' => date('Y-m-d'),
+                            'sale_id' => $pid['sale_id'],
+                            'user_id'=>$user->data()->id
+                        ));
+                        $successMessage = 'Customer Payment Added Successful';
+
+                    } catch (Exception $e) {
+                        die($e->getMessage());
+                    }
+                }else{
+                    $errorMessage='Payment Exceed the required Amount';
+                }
+            } else {
+                $pageError = $validate->errors();
+            }
+        }
         elseif (Input::get('frame_return')){
             $validate = $validate->check($_POST, array(
                 'quantity' => array(
@@ -972,6 +1314,93 @@ if($user->isLoggedIn()) {
                 $pageError = $validate->errors();
             }
         }
+        elseif (Input::get('add_brand')) {
+            $validate = $validate->check($_POST, array(
+                'name' => array(
+                    'required' => true,
+                ),
+            ));
+            if ($validate->passed()) {
+                try {
+                    $user->createRecord('frame_brand', array(
+                        'name' => Input::get('name'),
+                    ));
+                    $successMessage = 'Brand added Successful';
+
+                } catch (Exception $e) {
+                    die($e->getMessage());
+                }
+            } else {
+                $pageError = $validate->errors();
+            }
+        }
+        elseif (Input::get('add_lens_cat')) {
+            $validate = $validate->check($_POST, array(
+                'name' => array(
+                    'required' => true,
+                ),
+            ));
+            if ($validate->passed()) {
+                try {
+                    $user->createRecord('lens_type', array(
+                        'name' => Input::get('name'),
+                        'status' => 1,
+                    ));
+                    $successMessage = 'Lens Category added Successful';
+
+                } catch (Exception $e) {
+                    die($e->getMessage());
+                }
+            } else {
+                $pageError = $validate->errors();
+            }
+        }
+        elseif (Input::get('add_lens_type')) {
+            $validate = $validate->check($_POST, array(
+                'name' => array(
+                    'required' => true,
+                ),
+                'lens_category' => array(
+                    'required' => true,
+                ),
+            ));
+            if ($validate->passed()) {
+                try {
+                    $user->createRecord('lens_cat', array(
+                        'name' => Input::get('name'),
+                        'type_id' => Input::get('lens_category'),
+                        'status' => 1,
+                    ));
+                    $successMessage = 'Lens Type Added Successful';
+
+                } catch (Exception $e) {
+                    die($e->getMessage());
+                }
+            } else {
+                $pageError = $validate->errors();
+            }
+        }
+        elseif (Input::get('add_accessory')) {
+            $validate = $validate->check($_POST, array(
+                'name' => array(
+                    'required' => true,
+                ),
+            ));
+            if ($validate->passed()) {
+                try {
+                    $user->createRecord('accessories', array(
+                        'name' => Input::get('name'),
+                    ));
+                    $successMessage = 'Accessory added Successful';
+
+                } catch (Exception $e) {
+                    die($e->getMessage());
+                }
+            } else {
+                $pageError = $validate->errors();
+            }
+        }
+
     }
 }else{
     Redirect::to('index.php');
@@ -1291,6 +1720,7 @@ if($user->isLoggedIn()) {
                                             <option value="">Select Type</option>
                                             <option value="1">Frame</option>
                                             <option value="2">Lens</option>
+                                            <option value="3">Accessories</option>
                                         </select>
                                     </div>
                                 </div>
@@ -1552,7 +1982,7 @@ if($user->isLoggedIn()) {
                                 <div class="row-form clearfix">
                                     <div class="col-md-3">TIN:</div>
                                     <div class="col-md-9">
-                                        <input value="" class="validate[required]" type="text" name="tin" id="tin"/>
+                                        <input value="" class="" type="text" name="tin" id="tin"/>
                                     </div>
                                 </div>
 
@@ -1565,7 +1995,7 @@ if($user->isLoggedIn()) {
 
                                 <div class="row-form clearfix">
                                     <div class="col-md-3">E-mail Address:</div>
-                                    <div class="col-md-9"><input value="" class="validate[required,custom[email]]" type="text" name="email_address" id="email" />  <span>Example: someone@nowhere.com</span></div>
+                                    <div class="col-md-9"><input value="" class="" type="text" name="email_address" id="email" />  <span>Example: someone@nowhere.com</span></div>
                                 </div>
 
                                 <div class="row-form clearfix">
@@ -1787,8 +2217,9 @@ if($user->isLoggedIn()) {
                                     <div class="col-md-9">
                                         <select name="lens_category" style="width: 100%;" >
                                             <option value="">Select</option>
-                                            <option value="cylinder">Cylinder</option>
-                                            <option value="sphere">Sphere</option>
+                                            <?php foreach ($override->getData('lens_cat') as $lensType){?>
+                                                <option value="<?=$lensType['id']?>"><?=$lensType['name']?></option>
+                                            <?php }?>
                                         </select>
                                     </div>
                                 </div>
@@ -2085,6 +2516,433 @@ if($user->isLoggedIn()) {
                         </div>
 
                     </div>
+                <?php }elseif ($_GET['id'] == 18 && $user->data()->position == 1){?>
+                    <div class="col-md-offset-1 col-md-8">
+                        <div class="head clearfix">
+                            <div class="isw-ok"></div>
+                            <h1>Add Frame Brand</h1>
+                        </div>
+                        <div class="block-fluid">
+                            <form id="validation" method="post" >
+                                <div class="row-form clearfix">
+                                    <div class="col-md-3">Brand Name:</div>
+                                    <div class="col-md-9">
+                                        <input value="" class="validate[required]" type="text" name="name" id="name"/>
+                                    </div>
+                                </div>
+                                <div class="footer tar">
+                                    <input type="submit" name="add_brand" value="Submit" class="btn btn-default">
+                                </div>
+
+                            </form>
+                        </div>
+
+                    </div>
+                <?php }elseif ($_GET['id'] == 19 && $user->data()->position == 1){?>
+                    <div class="col-md-offset-1 col-md-8">
+                        <div class="head clearfix">
+                            <div class="isw-ok"></div>
+                            <h1>Add Lens Category Branch</h1>
+                        </div>
+                        <div class="block-fluid">
+                            <form id="validation" method="post" >
+                                <div class="row-form clearfix">
+                                    <div class="col-md-3">Lens Category Name:</div>
+                                    <div class="col-md-9">
+                                        <input value="" class="validate[required]" type="text" name="name" id="name"/>
+                                    </div>
+                                </div>
+                                <div class="footer tar">
+                                    <input type="submit" name="add_lens_cat" value="Submit" class="btn btn-default">
+                                </div>
+
+                            </form>
+                        </div>
+
+                    </div>
+                <?php }elseif ($_GET['id'] == 20 && $user->data()->position == 1){?>
+                    <div class="col-md-offset-1 col-md-8">
+                        <div class="head clearfix">
+                            <div class="isw-ok"></div>
+                            <h1>Add Lens Type</h1>
+                        </div>
+                        <div class="block-fluid">
+                            <form id="validation" method="post" >
+                                <div class="row-form clearfix">
+                                    <div class="col-md-3">Lens Category:</div>
+                                    <div class="col-md-9">
+                                        <select name="lens_category"  class="validate[required]">
+                                            <option value="">Choose Category</option>
+                                            <?php foreach ($override->getData('lens_type') as $cat){?>
+                                                <option value="<?=$cat['id']?>"><?=$cat['name']?></option>
+                                            <?php }?>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row-form clearfix">
+                                    <div class="col-md-3">Type Name:</div>
+                                    <div class="col-md-9">
+                                        <input value="" class="validate[required]" type="text" name="name" id="name"/>
+                                    </div>
+                                </div>
+                                <div class="footer tar">
+                                    <input type="submit" name="add_lens_type" value="Submit" class="btn btn-default">
+                                </div>
+
+                            </form>
+                        </div>
+
+                    </div>
+                <?php }elseif ($_GET['id'] == 21 && $user->data()->position == 1){?>
+                    <div class="col-md-offset-1 col-md-8">
+                        <div class="head clearfix">
+                            <div class="isw-ok"></div>
+                            <h1>Add Accessories Stock Batch</h1>
+                        </div>
+                        <div class="block-fluid">
+                            <form id="validation" method="post" >
+                                <div class="row-form clearfix">
+                                    <div class="col-md-3">Select Batch</div>
+                                    <div class="col-md-9">
+                                        <select name="batch_id" style="width: 100%;" required>
+                                            <option value="">Select</option>
+                                            <?php foreach ($override->getNews('batch','batch_type',3,'status',1) as $batch){?>
+                                                <option value="<?=$batch['id']?>"><?=$batch['name']?></option>
+                                            <?php }?>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row-form clearfix">
+                                    <div class="col-md-3">Select Accessory</div>
+                                    <div class="col-md-9">
+                                        <select name="accessory_id" style="width: 100%;" required>
+                                            <option value="">Select</option>
+                                            <?php foreach ($override->getData('accessories') as $brand){?>
+                                                <option value="<?=$brand['id']?>"><?=$brand['name']?></option>
+                                            <?php }?>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row-form clearfix">
+                                    <div class="col-md-3">Quantity:</div>
+                                    <div class="col-md-9">
+                                        <input value="" class="validate[required]" type="text" name="quantity" id="quantity"/>
+                                    </div>
+                                </div>
+                                <div class="row-form clearfix">
+                                    <div class="col-md-3">Price per Item:</div>
+                                    <div class="col-md-9">
+                                        <input value="" class="validate[required]" type="text" name="price" id="price"/>
+                                    </div>
+                                </div>
+                                <div class="footer tar">
+                                    <input type="submit" name="add_batch_stock_accessories" value="Submit" class="btn btn-default">
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                <?php }elseif ($_GET['id'] == 22 && $user->data()->position == 1){?>
+                    <div class="col-md-offset-1 col-md-8">
+                        <div class="head clearfix">
+                            <div class="isw-ok"></div>
+                            <h1>Assign Accessory Stock</h1>
+                        </div>
+                        <div class="block-fluid">
+                            <form id="validation" method="post" >
+                                <div class="row-form clearfix">
+                                    <div class="col-md-3">Select Staff</div>
+                                    <div class="col-md-9">
+                                        <select name="user_id"  style="width: 100%;" required>
+                                            <option value="">Select</option>
+                                            <?php foreach ($override->getData('user') as $brand){?>
+                                                <option value="<?=$brand['id']?>"><?=$brand['firstname'].' '.$brand['lastname']?></option>
+                                            <?php }?>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row-form clearfix">
+                                    <div class="col-md-3">Select Batch</div>
+                                    <div class="col-md-9">
+                                        <select name="batch_id"  style="width: 100%;" required>
+                                            <option value="">Select</option>
+                                            <?php foreach ($override->getNews('batch','batch_type',3,'status',1) as $batch){?>
+                                                <option value="<?=$batch['id']?>"><?=$batch['name']?></option>
+                                            <?php }?>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row-form clearfix">
+                                    <div class="col-md-3">Select Accessory</div>
+                                    <div class="col-md-9">
+                                        <select name="accessory_id" id="s2_1" style="width: 100%;" required>
+                                            <option value="">Select</option>
+                                            <?php foreach ($override->getData('accessories') as $accessories){?>
+                                                <option value="<?=$accessories['id']?>"><?=$accessories['name']?></option>
+                                            <?php }?>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row-form clearfix">
+                                    <div class="col-md-3">Quantity:</div>
+                                    <div class="col-md-9">
+                                        <input value="" class="validate[required]" type="text" name="quantity" id="quantity"/>
+                                    </div>
+                                </div>
+
+                                <div class="footer tar">
+                                    <input type="submit" name="assign_stock_accessory" value="Submit" class="btn btn-default">
+                                </div>
+
+                            </form>
+                        </div>
+
+                    </div>
+                <?php }elseif ($_GET['id'] == 23 && $user->data()->position == 1){?>
+                    <div class="col-md-offset-1 col-md-8">
+                        <div class="head clearfix">
+                            <div class="isw-ok"></div>
+                            <h1>Add Accessories</h1>
+                        </div>
+                        <div class="block-fluid">
+                            <form id="validation" method="post" >
+                                <div class="row-form clearfix">
+                                    <div class="col-md-3">Accessory Name:</div>
+                                    <div class="col-md-9">
+                                        <input value="" class="validate[required]" type="text" name="name" id="name"/>
+                                    </div>
+                                </div>
+                                <div class="footer tar">
+                                    <input type="submit" name="add_accessory" value="Submit" class="btn btn-default">
+                                </div>
+
+                            </form>
+                        </div>
+
+                    </div>
+                <?php }elseif ($_GET['id'] == 24){?>
+                    <div class="col-md-offset-1 col-md-8">
+                        <div class="head clearfix">
+                            <div class="isw-ok"></div>
+                            <h1>Sales Accessories to Cash Customers</h1>
+                        </div>
+                        <div class="block-fluid">
+                            <form id="validation" method="post" >
+                                <div class="row-form clearfix">
+                                    <div class="col-md-3">Select Batch</div>
+                                    <div class="col-md-9">
+                                        <select name="batch_id" style="width: 100%;" required>
+                                            <option value="">Select</option>
+                                            <?php foreach ($override->getNews('batch','batch_type',3,'status',1) as $batch){?>
+                                                <option value="<?=$batch['id']?>"><?=$batch['name']?></option>
+                                            <?php }?>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row-form clearfix">
+                                    <div class="col-md-3">Select Accessory</div>
+                                    <div class="col-md-9">
+                                        <select name="accessory_id" id="s2_2" style="width: 100%;" required>
+                                            <option value="">Select</option>
+                                            <?php foreach ($override->getData('accessories') as $accessories){?>
+                                                <option value="<?=$accessories['id']?>"><?=$accessories['name']?></option>
+                                            <?php }?>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row-form clearfix">
+                                    <div class="col-md-3">Client Name:</div>
+                                    <div class="col-md-9">
+                                        <input value="" class="validate[required]" type="text" name="client_name" id="client_name"/>
+                                    </div>
+                                </div>
+                                <div class="row-form clearfix">
+                                    <div class="col-md-3">Client Phone:</div>
+                                    <div class="col-md-9">
+                                        <input value="" class="validate[required]" type="text" name="client_phone" id="client_phone"/>
+                                    </div>
+                                </div>
+                                <div class="row-form clearfix">
+                                    <div class="col-md-3">Payment Type</div>
+                                    <div class="col-md-9">
+                                        <select name="pay_type"  style="width: 100%;" required>
+                                            <option value="">Select Method</option>
+                                            <option value="1">Cash</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row-form clearfix">
+                                    <div class="col-md-3">Quantity:</div>
+                                    <div class="col-md-9">
+                                        <input value="" class="validate[required]" type="text" name="quantity" id="quantity"/>
+                                    </div>
+                                </div>
+                                <div class="row-form clearfix">
+                                    <div class="col-md-3">Invoice No.:</div>
+                                    <div class="col-md-9">
+                                        <input value="" class="validate[required]" type="text" name="invoice_no" id="invoice"/>
+                                    </div>
+                                </div>
+                                <div class="row-form clearfix">
+                                    <div class="col-md-3">Delivery Note No.:</div>
+                                    <div class="col-md-9">
+                                        <input value="" class="validate[required]" type="text" name="delivery_note" id="d_note"/>
+                                    </div>
+                                </div>
+                                <div class="row-form clearfix">
+                                    <div class="col-md-3">Cash Amount:</div>
+                                    <div class="col-md-9">
+                                        <input value="" class="validate[required]" type="number" name="cash" id="cash"/>
+                                    </div>
+                                </div>
+                                <div class="row-form clearfix">
+                                    <div class="col-md-3">Note:</div>
+                                    <div class="col-md-9"><textarea name="note" placeholder="Sales notes..."></textarea></div>
+                                </div>
+                                <div class="footer tar">
+                                    <input type="submit" name="accessory_sale" value="Submit" class="btn btn-default">
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                <?php }elseif ($_GET['id'] == 25){?>
+                    <div class="col-md-offset-1 col-md-8">
+                        <div class="head clearfix">
+                            <div class="isw-ok"></div>
+                            <h1>Sales Accessories to Credit Customer</h1>
+                        </div>
+                        <div class="block-fluid">
+                            <form id="validation" method="post" >
+                                <div class="row-form clearfix">
+                                    <div class="col-md-3">Select Batch</div>
+                                    <div class="col-md-9">
+                                        <select name="batch_id" style="width: 100%;" required>
+                                            <option value="">Select</option>
+                                            <?php foreach ($override->getNews('batch','batch_type',3,'status',1) as $batch){?>
+                                                <option value="<?=$batch['id']?>"><?=$batch['name']?></option>
+                                            <?php }?>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row-form clearfix">
+                                    <div class="col-md-3">Select Accessory</div>
+                                    <div class="col-md-9">
+                                        <select name="accessory_id" id="" style="width: 100%;" required>
+                                            <option value="">Select</option>
+                                            <?php foreach ($override->getData('accessories') as $accessories){?>
+                                                <option value="<?=$accessories['id']?>"><?=$accessories['name']?></option>
+                                            <?php }?>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row-form clearfix">
+                                    <div class="col-md-3">Select Customer</div>
+                                    <div class="col-md-9">
+                                        <select name="customer" id="s2_1"  style="width: 100%;" required>
+                                            <option value="">Select Customer</option>
+                                            <?php foreach ($override->getData('customer') as $customer){?>
+                                                <option value="<?=$customer['id']?>"><?=$customer['name']?></option>
+                                            <?php }?>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="row-form clearfix">
+                                    <div class="col-md-3">Client Phone:</div>
+                                    <div class="col-md-9">
+                                        <input value="" class="validate[required]" type="text" name="client_phone" id="client_phone"/>
+                                    </div>
+                                </div>
+                                <div class="row-form clearfix">
+                                    <div class="col-md-3">Payment Type</div>
+                                    <div class="col-md-9">
+                                        <select name="pay_type"  style="width: 100%;" required>
+                                            <option value="">Select Method</option>
+                                            <option value="2">Credit</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row-form clearfix">
+                                    <div class="col-md-3">Quantity:</div>
+                                    <div class="col-md-9">
+                                        <input value="" class="validate[required]" type="number" name="quantity" id="quantity"/>
+                                    </div>
+                                </div>
+                                <div class="row-form clearfix">
+                                    <div class="col-md-3">Invoice No.:</div>
+                                    <div class="col-md-9">
+                                        <input value="" class="validate[required]" type="text" name="invoice_no" id="invoice"/>
+                                    </div>
+                                </div>
+                                <div class="row-form clearfix">
+                                    <div class="col-md-3">Delivery Note No.:</div>
+                                    <div class="col-md-9">
+                                        <input value="" class="validate[required]" type="text" name="delivery_note" id="d_note"/>
+                                    </div>
+                                </div>
+                                <div class="row-form clearfix">
+                                    <div class="col-md-3">Cash Amount:</div>
+                                    <div class="col-md-9">
+                                        <input value="0" class="validate[required]" type="number" name="cash" id="cash"/>
+                                    </div>
+                                </div>
+                                <div class="row-form clearfix">
+                                    <div class="col-md-3">Note:</div>
+                                    <div class="col-md-9"><textarea name="note" placeholder="Sales notes..."></textarea></div>
+                                </div>
+                                <div class="footer tar">
+                                    <input type="submit" name="accessory_sale_cus" value="Submit" class="btn btn-default">
+                                </div>
+
+                            </form>
+                        </div>
+
+                    </div>
+                <?php }elseif ($_GET['id'] == 26){?>
+                    <div class="col-md-offset-1 col-md-8">
+                        <div class="head clearfix">
+                            <div class="isw-ok"></div>
+                            <h1>Add Customer Payment For Accessories</h1>
+                        </div>
+                        <div class="block-fluid">
+                            <form id="validation" method="post" >
+                                <div class="row-form clearfix">
+                                    <div class="col-md-3">Select Customer</div>
+                                    <div class="col-md-9">
+                                        <select name="customer" id="a_cc" style="width: 100%;" required>
+                                            <option value="">Select Customer</option>
+                                            <?php foreach ($override->getNewsNoRepeat('payment','customer_id','status',0,'user_id',$user->data()->id) as $customer){
+                                                $cname=$override->get('customer','id',$customer['customer_id'])[0];?>
+                                                <option value="<?=$cname['id']?>"><?=$cname['name']?></option>
+                                            <?php }?>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="row-form clearfix">
+                                    <div class="col-md-3">Select Payment Batch</div>
+                                    <div class="col-md-9">
+                                        <span><img src="img/loaders/loader.gif" id="wait" title="loader.gif"/></span>
+                                        <select name="payment_batch" id="cus_acc" style="width: 100%;" required>
+
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="row-form clearfix">
+                                    <div class="col-md-3">Amount:</div>
+                                    <div class="col-md-9">
+                                        <input value="" class="validate[required]" type="number" name="amount" id="amount"/>
+                                    </div>
+                                </div>
+
+                                <div class="footer tar">
+                                    <input type="submit" name="pay_sale_accessories" value="Submit" class="btn btn-default">
+                                </div>
+
+                            </form>
+                        </div>
+
+                    </div>
                 <?php }?>
                 <div class="dr"><span></span></div>
             </div>
@@ -2121,6 +2979,20 @@ if($user->isLoggedIn()) {
                 data:{getUid:getUid},
                 success:function(data){
                     $('#cus').html(data);
+                    $('#wait').hide();
+                }
+            });
+
+        });
+        $('#a_cc').change(function(){
+            var getUid = $(this).val();
+            $('#wait').show();
+            $.ajax({
+                url:"process.php?cnt=payAc",
+                method:"GET",
+                data:{getUid:getUid},
+                success:function(data){
+                    $('#cus_acc').html(data);
                     $('#wait').hide();
                 }
             });

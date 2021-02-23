@@ -55,6 +55,11 @@ foreach ($override->getData('assigned_stock') as $stock){
                     </a>
                 </li>
                 <li class="">
+                    <a href="add.php?id=21">
+                        <span class="glyphicon glyphicon-plus-sign"></span><span class="text">Add Accessories Batch</span>
+                    </a>
+                </li>
+                <li class="">
                     <a href="info.php?id=7">
                         <span class="glyphicon glyphicon-grain"></span><span class="text">Manage Batch</span>
                     </a>
@@ -71,7 +76,7 @@ foreach ($override->getData('assigned_stock') as $stock){
                     </a>
                 </li>
                 <li>
-                    <a href="#">
+                    <a href="info.php?id=22">
                         <span class="glyphicon glyphicon-registration-mark"></span><span class="text">Manage staff</span>
                     </a>
                 </li>
@@ -104,6 +109,11 @@ foreach ($override->getData('assigned_stock') as $stock){
                     <li>
                         <a href="add.php?id=14">
                             <span class="glyphicon glyphicon-zoom-in"></span><span class="text">Assign Lens Stock</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="add.php?id=22">
+                            <span class="glyphicon glyphicon-plus-sign"></span><span class="text">Assign Lens Accessories</span>
                         </a>
                     </li>
                 </ul>
@@ -174,6 +184,11 @@ foreach ($override->getData('assigned_stock') as $stock){
                     </a>
                 </li>
                 <li>
+                    <a href="info.php?id=21&typ=ac">
+                        <span class="glyphicon glyphicon-list"></span><span class="text">Accessories Payment Report</span>
+                    </a>
+                </li>
+                <li>
                     <a href="info.php?id=18">
                         <span class="glyphicon glyphicon-list-alt"></span><span class="text">Pending Payment Report</span>
                     </a>
@@ -185,6 +200,46 @@ foreach ($override->getData('assigned_stock') as $stock){
                 </li>
             </ul>
         </li>
+            <li class="openable">
+                <a href="#"><span class="isw-tag"></span><span class="text">Extra</span></a>
+                <ul>
+                    <li>
+                        <a href="add.php?id=18">
+                            <span class="glyphicon glyphicon-plus"></span><span class="text">Add Frame Brand</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="add.php?id=19">
+                            <span class="glyphicon glyphicon-plus-sign"></span><span class="text">Add Lens Category</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="add.php?id=20">
+                            <span class="glyphicon glyphicon-plus"></span><span class="text">Add Lens Type</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="add.php?id=23">
+                            <span class="glyphicon glyphicon-plus-sign"></span><span class="text">Add Accessories</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <span class="glyphicon glyphicon-list"></span><span class="text">Manage Frame Brand</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <span class="glyphicon glyphicon-list-alt"></span><span class="text">Manage Lens Category</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <span class="glyphicon glyphicon-list"></span><span class="text">Manage Lens Type</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
 <!--            <li>-->
 <!--                <a href="add.php?id=7">-->
 <!--                    <span class="isw-text_document"></span><span class="text">Sale Frame</span>-->
@@ -202,12 +257,12 @@ foreach ($override->getData('assigned_stock') as $stock){
 <!--            </li>-->
 <!--            <li>-->
 <!--                <a href="add.php?id=7">-->
-<!--                    <span class="isw-text_document"></span><span class="text">Sale Frame ( Normal Customer )</span>-->
+<!--                    <span class="isw-text_document"></span><span class="text">Sale Frame ( Cash Customer )</span>-->
 <!--                </a>-->
 <!--            </li>-->
 <!--            <li>-->
 <!--                <a href="add.php?id=9">-->
-<!--                    <span class="isw-attachment"></span><span class="text">Sale Frame ( Regular Customer )</span>-->
+<!--                    <span class="isw-attachment"></span><span class="text">Sale Frame ( Credit Customer )</span>-->
 <!--                </a>-->
 <!--            </li>-->
 <!--            <li>-->
@@ -221,6 +276,16 @@ foreach ($override->getData('assigned_stock') as $stock){
 <!--                </a>-->
 <!--            </li>-->
 <!--            <li>-->
+<!--                <a href="add.php?id=24">-->
+<!--                    <span class="isw-attachment"></span><span class="text">Accessories (Cash Customer)</span>-->
+<!--                </a>-->
+<!--            </li>-->
+<!--            <li>-->
+<!--                <a href="add.php?id=25">-->
+<!--                    <span class="isw-attachment"></span><span class="text">Accessories (Credit Customer)</span>-->
+<!--                </a>-->
+<!--            </li>-->
+<!--            <li>-->
 <!--                <a href="add.php?id=11">-->
 <!--                    <span class="isw-attachment"></span><span class="text">Add Frame Payment</span>-->
 <!--                </a>-->
@@ -228,6 +293,11 @@ foreach ($override->getData('assigned_stock') as $stock){
 <!--            <li>-->
 <!--                <a href="add.php?id=17">-->
 <!--                    <span class="isw-attachment"></span><span class="text">Add Lens Payment</span>-->
+<!--                </a>-->
+<!--            </li>-->
+<!--            <li>-->
+<!--                <a href="add.php?id=26">-->
+<!--                    <span class="isw-attachment"></span><span class="text">Add Accessories Payment</span>-->
 <!--                </a>-->
 <!--            </li>-->
         <?php }elseif ($user->data()->position == 2){?>
@@ -252,6 +322,16 @@ foreach ($override->getData('assigned_stock') as $stock){
                 </a>
             </li>
             <li>
+                <a href="add.php?id=24">
+                    <span class="isw-attachment"></span><span class="text">Accessories (Cash Customer)</span>
+                </a>
+            </li>
+            <li>
+                <a href="add.php?id=25">
+                    <span class="isw-attachment"></span><span class="text">Accessories (Credit Customer)</span>
+                </a>
+            </li>
+            <li>
                 <a href="add.php?id=11">
                     <span class="isw-attachment"></span><span class="text">Add Frame Payment</span>
                 </a>
@@ -259,6 +339,11 @@ foreach ($override->getData('assigned_stock') as $stock){
             <li>
                 <a href="add.php?id=17">
                     <span class="isw-attachment"></span><span class="text">Add Lens Payment</span>
+                </a>
+            </li>
+            <li>
+                <a href="add.php?id=26">
+                    <span class="isw-attachment"></span><span class="text">Add Accessories Payment</span>
                 </a>
             </li>
         <li>
