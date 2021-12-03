@@ -1,90 +1,121 @@
 <?php
+require_once'php/core/init.php';
+$user = new User();
+$override = new OverideData();
+$email = new Email();
+$random = new Random();
+$validate = new validate();
+$successMessage=null;$pageError=null;$errorMessage=null;
+if($user->isLoggedIn()) {
+    if (Input::exists('post')) {echo'frd';
+        if (Input::get('add_user')) {
+            $validate = $validate->check($_POST, array(
+                'firstname' => array(
+                    'required' => true,
+                    'min' => 3,
+                ),
+                'lastname' => array(
+                    'required' => true,
+                    'min' => 3,
+                ),
+                'position' => array(
+                    'required' => true,
+                ),
+                'username' => array(
+                    'required' => true,
+                    'unique' => 'user'
+                ),
+                'email_address' => array(
+                    'required' => true,
+                    'unique' => 'user'
+                ),
+            ));
+            if ($validate->passed()) {
+                $salt = $random->get_rand_alphanumeric(32);
+                $password = '12345678';
+                switch (Input::get('position')) {
+                    case 'Admin':
+                        $accessLevel = 1;
+                        break;
+                    case 'Sales':
+                        $accessLevel = 2;
+                        break;
+                }
+                try {
+                    $user->createRecord('user', array(
+                        'firstname' => Input::get('firstname'),
+                        'lastname' => Input::get('lastname'),
+                        'position' => Input::get('position'),
+                        'username' => Input::get('username'),
+                        'password' => Hash::make($password,$salt),
+                        'salt' => $salt,
+                        'create_on' => date('Y-m-d'),
+                        'access_level' => $accessLevel,
+                        'email' => Input::get('email'),
+                        'branch' => Input::get('branch'),
+                        'status' => 1,
+                        'last_login'=>'',
+                        'power'=>0,
+                        'user_id'=>1
+                    ));
+                    $successMessage = 'Account Created Successful';
 
-session_start();
-
-//initializing variables
-
-$username="";
-$email="";
-
-$errors=array();
-
-//connect to the database (db)
-
-$db= mysqli_connect(' localhost','hamabebe','Beatrice187##Beatrice187##','hamabebe_signup') or die("could not connect to the database");
-
-//register users
-
-$username=mysqli_real_escape_string($db,$_POST["username"]);
-$email=mysqli_real_escape_string($db,$_POST["email"]);
-$password1=mysqli_real_escape_string($db,$_POST["password1"]);
-$password2=mysqli_real_escape_string($db,$_POST["password2"]);
-
-//form validation
-
-if(empty($username)){array_push($errors,"username is required");}
-if(empty($email)){array_push($errors,"email is required");}
-if(empty($password1)){array_push($errors,"password is required");}
-if($password1 != password2){array_push($errors,"passowrds do not match");}
-
-//checking db for exixting user with the same username
-
-$user_check_query="SELECT = FROM user WHERE username='$username' or email='$email' LIMIT 1";
-
-$results=mysqli_query($db, $user_check_query);
-$user=mysqli_fetch_assoc($results) ;
-
-if($user){
-if($user["username"]===$username){array_push($errors,"username already exist");}
-    if($user["email"]===$email){array_push($errors,"This email Id has already registered a username");}
-
-}
-
-//register the user if no error
-
-if(count($errors)==0){
-
-    $password = md5($password1); //this will encrypt the password
-    $query= "INSERT INTO user (username,email,password) VALUES('$username','$email','$password')";
-
-    mysqli_query($db,$query);
-
-$_SESSION['username']=$username;
-$_SESSION['success']="you are now logged in";
-
-header('location:index.php');
-
-
-}
-//login user
-if(isset($_POST['login_user'])){
-
-    $username=mysqli_real_escape_string($db, $_POST['username']);
-    $password=mysqli_real_escape_string($db, $_POST['password1']);
-
-    if(empty($username)){
-
-        array_push($errors,"username is required");
-    }
-    if(empty($password)){
-
-        array_push($errors,"password is required");
-    }
-    if(count($errors)==0){
-
-        $password= md5($password);
-
-        $query="SELECT = FROM user WHERE username= '$username' AND password='$password'";
-        $results=mysqli_query($db,$query);
-
-        if(mysqli_num_rows($results)){
-            $_SESSION['username']=$username;
-            $_SESSION['success']="logged in successfully";
-            header('location: index.php');
-        }
-        else{
-            array_push($errors,"wrong username/password combination.please try again");
+                } catch (Exception $e) {
+                    die($e->getMessage());
+                }
+            } else {
+                $pageError = $validate->errors();
+            }
         }
     }
 }
 ?>
+<form method="post" >
+    <div class="row-form clearfix">
+        <div class="col-md-3">Clinic Branch:</div>
+        <div class="col-md-9">
+            <select name="branch" id="branch" class="validate[required]">
+                <option value="">Choose branch</option>
+                <option value="1">Sinza</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="row-form clearfix">
+        <div class="col-md-3">First Name:</div>
+        <div class="col-md-9">
+            <input value="" class="" type="text" name="firstname" id="firstname"/>
+        </div>
+    </div>
+    <div class="row-form clearfix">
+        <div class="col-md-3">Last Name:</div>
+        <div class="col-md-9">
+            <input value="" class="" type="text" name="lastname" id="lastname"/>
+        </div>
+    </div>
+    <div class="row-form clearfix">
+        <div class="col-md-3">Username:</div>
+        <div class="col-md-9">
+            <input value="" class="" type="text" name="username" id="username"/>
+        </div>
+    </div>
+
+    <div class="row-form clearfix">
+        <div class="col-md-3">Position</div>
+        <div class="col-md-9">
+            <select name="position" id="s2_1" style="width: 100%;">
+                <option value="Admin">Admin</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="row-form clearfix">
+        <div class="col-md-3">E-mail Address:</div>
+        <div class="col-md-9"><input value="" class="" type="text" name="email" id="email" />  <span>Example: someone@nowhere.com</span></div>
+    </div>
+
+    <div class="footer tar">
+        <input type="submit" name="add_user" value="Submit" class="btn btn-default">
+    </div>
+
+</form>

@@ -3,12 +3,12 @@ class OverideData{
     private $_pdo;
     function __construct(){
         try {
-            $this->_pdo = new PDO('mysql:host=localhost;dbname=sales','frd','frdrck@1');
+            $this->_pdo = new PDO('mysql:host='.config::get('mysql/host').';dbname='.config::get('mysql/db'),config::get('mysql/username'),config::get('mysql/password'));
         }catch (PDOException $e){
             $e->getMessage();
         }
     }
-    public function unique($table,$field,$value){
+   public function unique($table,$field,$value){
         if($this->get($table,$field,$value)){
             return true;
         }else{

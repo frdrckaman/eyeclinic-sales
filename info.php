@@ -8,7 +8,15 @@ $random = new Random();
 $successMessage=null;$pageError=null;$errorMessage=null;
 $users = $override->getData('user');
 if($user->isLoggedIn()) {
-
+    if(Input::exists('post')){
+        if(Input::get('d_frame_b')){
+            $user->deleteRecord('stock_batch','id', Input::get('id'));
+            $successMessage = 'Frame Batch Deleted Successful';
+        }elseif (Input::get('d_lens_l')){
+            $user->deleteRecord('stock_batch_lens','id', Input::get('id'));
+            $successMessage = 'Frame Batch Deleted Successful';
+        }
+    }
 }else{
     Redirect::to('index.php');
 }
@@ -37,6 +45,22 @@ if($user->isLoggedIn()) {
         </div>
 
         <div class="workplace">
+            <?php if($errorMessage){?>
+                <div class="alert alert-danger">
+                    <h4>Error!</h4>
+                    <?=$errorMessage?>
+                </div>
+            <?php }elseif($pageError){?>
+                <div class="alert alert-danger">
+                    <h4>Error!</h4>
+                    <?php foreach($pageError as $error){echo $error.' , ';}?>
+                </div>
+            <?php }elseif($successMessage){?>
+                <div class="alert alert-success">
+                    <h4>Success!</h4>
+                    <?=$successMessage?>
+                </div>
+            <?php }?>
 
             <div class="row">
                 <?php if($_GET['id'] == 1 && $user->data()->position == 1){?>
@@ -767,6 +791,8 @@ if($user->isLoggedIn()) {
                                             <td><a href="info.php?id=8&bid=<?=$batch['id']?>">Details</a> </td>
                                         <?php }elseif($batch['batch_type'] == 2){?>
                                             <td><a href="info.php?id=20&bid=<?=$batch['id']?>">Details</a> </td>
+                                        <?php }elseif ($batch['batch_type'] == 3){?>
+                                            <td><a href="info.php?id=23&bid=<?=$batch['id']?>">Details</a> </td>
                                         <?php }?>
                                     </tr>
                                 <?php }?>
@@ -796,12 +822,13 @@ if($user->isLoggedIn()) {
                             <table cellpadding="0" cellspacing="0" width="100%" class="table">
                                 <thead>
                                 <tr>
-                                    <th width="20%">Batch Name</th>
+                                    <th width="15%">Batch Name</th>
                                     <th width="15%">Batch ID</th>
                                     <th width="15%">Brand</th>
                                     <th width="15%">Quantity</th>
                                     <th width="15%">Cost per Frame</th>
                                     <th width="15%">Total Cost</th>
+                                    <th width="5%">Action</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -816,6 +843,12 @@ if($user->isLoggedIn()) {
                                         <td><?=$batch['quantity']?></td>
                                         <td><?=number_format($batch['cost'])?></td>
                                         <td><?=number_format($batch['cost']*$batch['quantity'])?></td>
+                                        <td>
+                                            <form method="post">
+                                                <input type="hidden" name="id" value="<?=$batch['id']?>">
+                                                <input type="submit" name="d_frame_b" value="delete">
+                                            </form>
+                                        </td>
                                     </tr>
                                 <?php }?>
                                 </tbody>
@@ -1836,7 +1869,7 @@ if($user->isLoggedIn()) {
                             <table cellpadding="0" cellspacing="0" width="100%" class="table">
                                 <thead>
                                 <tr>
-                                    <th width="20%">Batch Name</th>
+                                    <th width="15%">Batch Name</th>
                                     <th width="10%">Batch ID</th>
                                     <th width="10%">Lens Type</th>
                                     <th width="10%">Lens Category</th>
@@ -1844,6 +1877,7 @@ if($user->isLoggedIn()) {
                                     <th width="10%">Quantity</th>
                                     <th width="15%">Cost per Lens</th>
                                     <th width="15%">Total Cost</th>
+                                    <td width="5%">Action</td>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -1860,6 +1894,12 @@ if($user->isLoggedIn()) {
                                         <td><?=$batch['quantity']?></td>
                                         <td><?=number_format($batch['cost'])?></td>
                                         <td><?=number_format($batch['cost']*$batch['quantity'])?></td>
+                                        <td>
+                                            <form method="post">
+                                                <input type="hidden" name="id" value="<?=$batch['id']?>">
+                                                <input type="submit" name="d_lens_l" value="delete">
+                                            </form>
+                                        </td>
                                     </tr>
                                 <?php }?>
                                 </tbody>
@@ -2012,8 +2052,65 @@ if($user->isLoggedIn()) {
                             </table>
                         </div>
                     </div>
-                <?php }elseif ($_GET['id'] == 23){?>
-
+                <?php }elseif ($_GET['id'] == 23){  /*list all accessories here*/?>
+                    <div class="col-md-12">
+                        <div class="head clearfix">
+                            <div class="isw-grid"></div>
+                            <h1>Accessories Batch Report</h1>
+                            <ul class="buttons">
+                                <li><a href="#" class="isw-download"></a></li>
+                                <li><a href="#" class="isw-attachment"></a></li>
+                                <li>
+                                    <a href="#" class="isw-settings"></a>
+                                    <ul class="dd-list">
+                                        <li><a href="#"><span class="isw-plus"></span> New document</a></li>
+                                        <li><a href="#"><span class="isw-edit"></span> Edit</a></li>
+                                        <li><a href="#"><span class="isw-delete"></span> Delete</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="block-fluid">
+                            <table cellpadding="0" cellspacing="0" width="100%" class="table">
+                                <thead>
+                                <tr>
+                                    <th width="15%">Batch Name</th>
+                                    <th width="10%">Batch ID</th>
+                                    <th width="10%">Lens Type</th>
+                                    <th width="10%">Lens Category</th>
+                                    <th width="10%">Lens Power</th>
+                                    <th width="10%">Quantity</th>
+                                    <th width="15%">Cost per Lens</th>
+                                    <th width="15%">Total Cost</th>
+                                    <td width="5%">Action</td>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <?php foreach ($override->get('stock_batch_lens','batch_id',$_GET['bid']) as $batch){
+                                    $stockBatch=$override->get('batch','id',$batch['batch_id'])[0];
+                                    $lensType=$override->get('lens_type','id',$batch['lens_type'])[0];
+                                    ?>
+                                    <tr>
+                                        <td><a href="#"><?=$stockBatch['name']?></a></td>
+                                        <td> <?=$stockBatch['batch_id']?></td>
+                                        <td> <?=$lensType['name']?></td>
+                                        <td><?=$batch['lens_cat']?></td>
+                                        <td><?=$batch['lens_power']?></td>
+                                        <td><?=$batch['quantity']?></td>
+                                        <td><?=number_format($batch['cost'])?></td>
+                                        <td><?=number_format($batch['cost']*$batch['quantity'])?></td>
+                                        <td>
+                                            <form method="post">
+                                                <input type="hidden" name="id" value="<?=$batch['id']?>">
+                                                <input type="submit" name="d_lens_l" value="delete">
+                                            </form>
+                                        </td>
+                                    </tr>
+                                <?php }?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 <?php }elseif ($_GET['id'] == 24){?>
 
                 <?php }?>
