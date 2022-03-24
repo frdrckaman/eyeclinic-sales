@@ -2,7 +2,19 @@
     foreach ($override->getData('frame_stock') as $stock){
         $total += $stock['quantity'];
     }
+foreach ($override->getData('stock_batch_accessories') as $stock){
+    $total += $stock['quantity'];
+}
+foreach ($override->getData('stock_batch_lens') as $stock){
+    $total += $stock['quantity'];
+}
 foreach ($override->getData('assigned_stock') as $stock){
+    $assigned += $stock['quantity'];
+}
+foreach ($override->getData('assigned_stock_lens') as $stock){
+    $assigned += $stock['quantity'];
+}
+foreach ($override->getData('assigned_stock_accessories') as $stock){
     $assigned += $stock['quantity'];
 }
 ?>
@@ -25,7 +37,7 @@ foreach ($override->getData('assigned_stock') as $stock){
             <li><span class="glyphicon glyphicon-share-alt"></span> <a href="logout.php">Logout</a></li>
         </ul>
         <div class="info">
-            <span>Welcom back! Your last visit: <?=$user->data()->last_login?></span>
+            <span>Welcome back! Your last visit: <?=$user->data()->last_login?></span>
         </div>
     </div>
 
