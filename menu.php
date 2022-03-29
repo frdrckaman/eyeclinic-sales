@@ -358,11 +358,28 @@ foreach ($override->getData('assigned_stock_accessories') as $stock){
                     <span class="isw-attachment"></span><span class="text">Add Accessories Payment</span>
                 </a>
             </li>
-        <li>
-            <a href="info.php?id=13">
-                <span class="isw-folder"></span><span class="text">My Sock</span>
-            </a>
-        </li>
+            <li class="openable">
+                <a href="#"><span class="isw-folder"></span><span class="text">My Stock</span></a>
+                <ul>
+                    <li>
+                        <a href="info.php?id=131">
+                            <span class="glyphicon glyphicon-list"></span><span class="text">Frame Stock</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="info.php?id=133">
+                            <span class="glyphicon glyphicon-list-alt"></span><span class="text">Lens Stock</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="info.php?id=133">
+                            <span class="glyphicon glyphicon-list"></span><span class="text">Accessories Stock</span>
+                        </a>
+                    </li>
+
+                </ul>
+            </li>
+
         <li>
             <a href="info.php?id=15">
                 <span class="isw-fullscreen"></span><span class="text">My Sales</span>

@@ -1304,7 +1304,7 @@ if($user->isLoggedIn()) {
                             </table>
                         </div>
                     </div>
-                <?php }elseif ($_GET['id'] == 13){?>
+                <?php }elseif ($_GET['id'] == 131){?>
                     <div class="col-md-12">
                         <div class="head clearfix">
                             <div class="isw-grid"></div>
@@ -1338,7 +1338,7 @@ if($user->isLoggedIn()) {
                                 </thead>
                                 <tbody>
                                 <?php $uBatch=$override->getNoRepeat('assigned_stock','batch_id','user_id',$user->data()->id);
-                                foreach ($uBatch as $batches){$batch=$override->getNews('batch','id',$batches['batch_id'],'user_id',$user->data()->id)[0];
+                                foreach ($uBatch as $batches){$batch=$override->get('batch','id',$batches['batch_id'])[0];
                                     $quantity=$override->getSumV2('assigned_stock','quantity','batch_id',$batches['batch_id'],'user_id',$user->data()->id)[0];
                                     $sold=$override->getSumV2('frame_sale','quantity','batch_id',$batches['batch_id'],'user_id',$user->data()->id)[0];
                                     $remain=$quantity['SUM(quantity)']-$sold['SUM(quantity)']?>
@@ -1357,7 +1357,113 @@ if($user->isLoggedIn()) {
                             </table>
                         </div>
                     </div>
-                <?php }elseif ($_GET['id'] == 14){?>
+                <?php }elseif ($_GET['id'] == 132){?>
+                    <div class="col-md-12">
+                        <div class="head clearfix">
+                            <div class="isw-grid"></div>
+                            <h1>My Batch Report Lens</h1>
+                            <ul class="buttons">
+                                <li><a href="#" class="isw-download"></a></li>
+                                <li><a href="#" class="isw-attachment"></a></li>
+                                <li>
+                                    <a href="#" class="isw-settings"></a>
+                                    <ul class="dd-list">
+                                        <li><a href="#"><span class="isw-plus"></span> New document</a></li>
+                                        <li><a href="#"><span class="isw-edit"></span> Edit</a></li>
+                                        <li><a href="#"><span class="isw-delete"></span> Delete</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="block-fluid">
+                            <table cellpadding="0" cellspacing="0" width="100%" class="table">
+                                <thead>
+                                <tr>
+                                    <th width="10%">Batch Name</th>
+                                    <th width="10%">Batch ID</th>
+                                    <th width="10%">Quantity Given</th>
+                                    <th width="10%">Quantity SOld</th>
+                                    <th width="10%">Quantity Remains</th>
+                                    <th width="15%">Batch Date</th>
+                                    <th width="15">Status</th>
+                                    <th width="5">Details</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <?php $uBatch=$override->getNoRepeat('assigned_stock_lens','batch_id','user_id',$user->data()->id);
+                                foreach ($uBatch as $batches){$batch=$override->get('batch','id',$batches['batch_id'])[0];
+                                    $quantity=$override->getSumV2('assigned_stock_lens','quantity','batch_id',$batches['batch_id'],'user_id',$user->data()->id)[0];
+                                    $sold=$override->getSumV2('lens_sale','quantity','batch_id',$batches['batch_id'],'user_id',$user->data()->id)[0];
+                                    $remain=$quantity['SUM(quantity)']-$sold['SUM(quantity)']?>
+                                    <tr>
+                                        <td><a href="#"><?=$batch['name']?></a></td>
+                                        <td> <?=$batch['batch_id']?></td>
+                                        <td><?=$quantity['SUM(quantity)']?></td>
+                                        <td><?=$sold['SUM(quantity)']?></td>
+                                        <td><?=$remain?></td>
+                                        <td><?=$batch['create_date']?></td>
+                                        <td><?php if($batch['status'] == 1){?><span class="label label-success">Active</span><?php }else{?><span class="label label-danger">Completed</span><?php }?></td>
+                                        <td><a href="info.php?id=14&bid=<?=$batches['batch_id']?>">Details</a> </td>
+                                    </tr>
+                                <?php }?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                <?php }elseif ($_GET['id'] == 133){?>
+                    <div class="col-md-12">
+                        <div class="head clearfix">
+                            <div class="isw-grid"></div>
+                            <h1>My Batch Report Accessories</h1>
+                            <ul class="buttons">
+                                <li><a href="#" class="isw-download"></a></li>
+                                <li><a href="#" class="isw-attachment"></a></li>
+                                <li>
+                                    <a href="#" class="isw-settings"></a>
+                                    <ul class="dd-list">
+                                        <li><a href="#"><span class="isw-plus"></span> New document</a></li>
+                                        <li><a href="#"><span class="isw-edit"></span> Edit</a></li>
+                                        <li><a href="#"><span class="isw-delete"></span> Delete</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="block-fluid">
+                            <table cellpadding="0" cellspacing="0" width="100%" class="table">
+                                <thead>
+                                <tr>
+                                    <th width="10%">Batch Name</th>
+                                    <th width="10%">Batch ID</th>
+                                    <th width="10%">Quantity Given</th>
+                                    <th width="10%">Quantity SOld</th>
+                                    <th width="10%">Quantity Remains</th>
+                                    <th width="15%">Batch Date</th>
+                                    <th width="15">Status</th>
+                                    <th width="5">Details</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <?php $uBatch=$override->getNoRepeat('assigned_stock_accessories','batch_id','user_id',$user->data()->id);
+                                foreach ($uBatch as $batches){$batch=$override->get('batch','id',$batches['batch_id'])[0];
+                                    $quantity=$override->getSumV2('assigned_stock_accessories','quantity','batch_id',$batches['batch_id'],'user_id',$user->data()->id)[0];
+                                    $sold=$override->getSumV2('accessories_sale','quantity','batch_id',$batches['batch_id'],'user_id',$user->data()->id)[0];
+                                    $remain=$quantity['SUM(quantity)']-$sold['SUM(quantity)']?>
+                                    <tr>
+                                        <td><a href="#"><?=$batch['name']?></a></td>
+                                        <td> <?=$batch['batch_id']?></td>
+                                        <td><?=$quantity['SUM(quantity)']?></td>
+                                        <td><?=$sold['SUM(quantity)']?></td>
+                                        <td><?=$remain?></td>
+                                        <td><?=$batch['create_date']?></td>
+                                        <td><?php if($batch['status'] == 1){?><span class="label label-success">Active</span><?php }else{?><span class="label label-danger">Completed</span><?php }?></td>
+                                        <td><a href="info.php?id=14&bid=<?=$batches['batch_id']?>">Details</a> </td>
+                                    </tr>
+                                <?php }?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                <?php }elseif ($_GET['id'] == 141){?>
                     <div class="col-md-12">
                         <div class="head clearfix">
                             <div class="isw-grid"></div>
@@ -1404,6 +1510,121 @@ if($user->isLoggedIn()) {
                                         <td><a href="#"><?=$stockBatch[0]['name']?></a></td>
                                         <td> <?=$stockBatch[0]['batch_id']?></td>
                                         <td> <?=$brand[0]['name']?></td>
+                                        <td><?=$batch['quantity']?></td>
+                                        <td><?=$sold['SUM(quantity)']?></td>
+                                        <td><?=$remain?></td>
+                                        <td><?=number_format($cost['cost'])?></td>
+                                        <td><?=number_format($cost['cost']*$sold['SUM(quantity)'])?></td>
+                                        <td><?=number_format($cost['cost']*$remain)?></td>
+                                        <td><?=number_format($cost['cost']*$batch['quantity'])?></td>
+                                    </tr>
+                                <?php }?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                <?php }elseif ($_GET['id'] == 142){?>
+                    <div class="col-md-12">
+                        <div class="head clearfix">
+                            <div class="isw-grid"></div>
+                            <h1>Batch Report Lens</h1>
+                            <ul class="buttons">
+                                <li><a href="#" class="isw-download"></a></li>
+                                <li><a href="#" class="isw-attachment"></a></li>
+                                <li>
+                                    <a href="#" class="isw-settings"></a>
+                                    <ul class="dd-list">
+                                        <li><a href="#"><span class="isw-plus"></span> New document</a></li>
+                                        <li><a href="#"><span class="isw-edit"></span> Edit</a></li>
+                                        <li><a href="#"><span class="isw-delete"></span> Delete</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="block-fluid">
+                            <table cellpadding="0" cellspacing="0" width="100%" class="table">
+                                <thead>
+                                <tr>
+                                    <th width="10%">Batch Name</th>
+                                    <th width="10%">Batch ID</th>
+                                    <th width="10%">Quantity Given</th>
+                                    <th width="10%">Quantity Sold</th>
+                                    <th width="10%">Quantity Remain</th>
+                                    <th width="10%">Cost per Frame</th>
+                                    <th width="10%">Sold Amount</th>
+                                    <th width="10%">Stock in Hand Amount</th>
+                                    <th width="10%">Total Cost</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <?php foreach ($override->getNews('assigned_stock_lens','user_id',$user->data()->id,'batch_id',$_GET['bid']) as $batch){
+                                    $stockBatch=$override->get('batch','id',$batch['batch_id']);
+                                    $cost=$override->get('stock_batch_lens','batch_id',$batch['batch_id'])[0];
+                                    $quantity=$override->getSumV2('assigned_stock_lens','quantity','batch_id',$batch['batch_id'],'user_id',$user->data()->id)[0];
+                                    $sold=$override->getSumV2('lens_sale','quantity','batch_id',$batch['batch_id'],'user_id',$user->data()->id)[0];
+                                    $remain=$quantity['SUM(quantity)']-$sold['SUM(quantity)']
+                                    ?>
+                                    <tr>
+                                        <td><a href="#"><?=$stockBatch[0]['name']?></a></td>
+                                        <td> <?=$stockBatch[0]['batch_id']?></td>
+                                        <td> <?=$brand[0]['name']?></td>
+                                        <td><?=$batch['quantity']?></td>
+                                        <td><?=$sold['SUM(quantity)']?></td>
+                                        <td><?=$remain?></td>
+                                        <td><?=number_format($cost['cost'])?></td>
+                                        <td><?=number_format($cost['cost']*$sold['SUM(quantity)'])?></td>
+                                        <td><?=number_format($cost['cost']*$remain)?></td>
+                                        <td><?=number_format($cost['cost']*$batch['quantity'])?></td>
+                                    </tr>
+                                <?php }?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                <?php }elseif ($_GET['id'] == 143){?>
+                    <div class="col-md-12">
+                        <div class="head clearfix">
+                            <div class="isw-grid"></div>
+                            <h1>Batch Report Accessories</h1>
+                            <ul class="buttons">
+                                <li><a href="#" class="isw-download"></a></li>
+                                <li><a href="#" class="isw-attachment"></a></li>
+                                <li>
+                                    <a href="#" class="isw-settings"></a>
+                                    <ul class="dd-list">
+                                        <li><a href="#"><span class="isw-plus"></span> New document</a></li>
+                                        <li><a href="#"><span class="isw-edit"></span> Edit</a></li>
+                                        <li><a href="#"><span class="isw-delete"></span> Delete</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="block-fluid">
+                            <table cellpadding="0" cellspacing="0" width="100%" class="table">
+                                <thead>
+                                <tr>
+                                    <th width="10%">Batch Name</th>
+                                    <th width="10%">Batch ID</th>
+                                    <th width="10%">Quantity Given</th>
+                                    <th width="10%">Quantity Sold</th>
+                                    <th width="10%">Quantity Remain</th>
+                                    <th width="10%">Cost per Frame</th>
+                                    <th width="10%">Sold Amount</th>
+                                    <th width="10%">Stock in Hand Amount</th>
+                                    <th width="10%">Total Cost</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <?php foreach ($override->getNews('assigned_stock_accessories','user_id',$user->data()->id,'batch_id',$_GET['bid']) as $batch){
+                                    $stockBatch=$override->get('batch','id',$batch['batch_id']);
+                                    $cost=$override->get('stock_batch_accessories','batch_id',$batch['batch_id'])[0];
+                                    $quantity=$override->getSumV2('assigned_stock_accessories','quantity','batch_id',$batch['batch_id'],'user_id',$user->data()->id)[0];
+                                    $sold=$override->getSumV2('accessories_sale','quantity','batch_id',$batch['batch_id'],'user_id',$user->data()->id)[0];
+                                    $remain=$quantity['SUM(quantity)']-$sold['SUM(quantity)']
+                                    ?>
+                                    <tr>
+                                        <td><a href="#"><?=$stockBatch[0]['name']?></a></td>
+                                        <td> <?=$stockBatch[0]['batch_id']?></td>
                                         <td><?=$batch['quantity']?></td>
                                         <td><?=$sold['SUM(quantity)']?></td>
                                         <td><?=$remain?></td>
