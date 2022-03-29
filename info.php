@@ -1343,14 +1343,14 @@ if($user->isLoggedIn()) {
                                     $sold=$override->getSumV2('frame_sale','quantity','batch_id',$batches['batch_id'],'user_id',$user->data()->id)[0];
                                     $remain=$quantity['SUM(quantity)']-$sold['SUM(quantity)']?>
                                     <tr>
-                                        <td><a href="#"><?=$batch['name']?></a></td>
+                                        <td><a href="info.php?id=141&bid=<?=$batches['batch_id']?>"><?=$batch['name']?></a></td>
                                         <td> <?=$batch['batch_id']?></td>
                                         <td><?=$quantity['SUM(quantity)']?></td>
                                         <td><?=$sold['SUM(quantity)']?></td>
                                         <td><?=$remain?></td>
                                         <td><?=$batch['create_date']?></td>
                                         <td><?php if($batch['status'] == 1){?><span class="label label-success">Active</span><?php }else{?><span class="label label-danger">Completed</span><?php }?></td>
-                                        <td><a href="info.php?id=14&bid=<?=$batches['batch_id']?>">Details</a> </td>
+                                        <td><a href="info.php?id=141&bid=<?=$batches['batch_id']?>">Details</a> </td>
                                     </tr>
                                 <?php }?>
                                 </tbody>
@@ -1396,14 +1396,14 @@ if($user->isLoggedIn()) {
                                     $sold=$override->getSumV2('lens_sale','quantity','batch_id',$batches['batch_id'],'user_id',$user->data()->id)[0];
                                     $remain=$quantity['SUM(quantity)']-$sold['SUM(quantity)']?>
                                     <tr>
-                                        <td><a href="#"><?=$batch['name']?></a></td>
+                                        <td><a href="info.php?id=142&bid=<?=$batches['batch_id']?>"><?=$batch['name']?></a></td>
                                         <td> <?=$batch['batch_id']?></td>
                                         <td><?=$quantity['SUM(quantity)']?></td>
                                         <td><?=$sold['SUM(quantity)']?></td>
                                         <td><?=$remain?></td>
                                         <td><?=$batch['create_date']?></td>
                                         <td><?php if($batch['status'] == 1){?><span class="label label-success">Active</span><?php }else{?><span class="label label-danger">Completed</span><?php }?></td>
-                                        <td><a href="info.php?id=14&bid=<?=$batches['batch_id']?>">Details</a> </td>
+                                        <td><a href="info.php?id=142&bid=<?=$batches['batch_id']?>">Details</a> </td>
                                     </tr>
                                 <?php }?>
                                 </tbody>
@@ -1449,14 +1449,14 @@ if($user->isLoggedIn()) {
                                     $sold=$override->getSumV2('accessories_sale','quantity','batch_id',$batches['batch_id'],'user_id',$user->data()->id)[0];
                                     $remain=$quantity['SUM(quantity)']-$sold['SUM(quantity)']?>
                                     <tr>
-                                        <td><a href="#"><?=$batch['name']?></a></td>
+                                        <td><a href="info.php?id=143&bid=<?=$batches['batch_id']?>"><?=$batch['name']?></a></td>
                                         <td> <?=$batch['batch_id']?></td>
                                         <td><?=$quantity['SUM(quantity)']?></td>
                                         <td><?=$sold['SUM(quantity)']?></td>
                                         <td><?=$remain?></td>
                                         <td><?=$batch['create_date']?></td>
                                         <td><?php if($batch['status'] == 1){?><span class="label label-success">Active</span><?php }else{?><span class="label label-danger">Completed</span><?php }?></td>
-                                        <td><a href="info.php?id=14&bid=<?=$batches['batch_id']?>">Details</a> </td>
+                                        <td><a href="info.php?id=143&bid=<?=$batches['batch_id']?>">Details</a> </td>
                                     </tr>
                                 <?php }?>
                                 </tbody>
