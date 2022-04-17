@@ -78,7 +78,7 @@ if(!$user->isLoggedIn()) {
 <html lang="en">
 
 <head>
-    <title>Login - OnaEyeCare</title>
+    <title>Login | OnaEyeCare</title>
     <?php include 'head.php'?>
 </head>
 <body>

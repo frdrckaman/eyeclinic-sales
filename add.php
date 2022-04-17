@@ -1410,7 +1410,7 @@ if($user->isLoggedIn()) {
 <html lang="en">
 
 <head>
-    <title>Dashboard - OnaEyeCare</title>
+    <title> Add | OnaEyeCare</title>
     <?php include "head.php";?>
 </head>
 <body>

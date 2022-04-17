@@ -25,7 +25,7 @@ if($user->isLoggedIn()) {
 <html lang="en">
 
 <head>
-    <title>Info - OnaEyeCare</title>
+    <title>Info | OnaEyeCare </title>
     <?php include "head.php";?>
 </head>
 <body>
